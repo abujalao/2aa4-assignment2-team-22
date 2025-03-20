@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team21;
+package ca.mcmaster.se2aa4.island.team22;
 
 import java.io.File;
 
@@ -12,7 +12,7 @@ public class Runner {
             run(Explorer.class)
                     .exploring(new File(filename))
                     .withSeed(42L)
-                    .startingAt(1, 1, "EAST")
+                    .startingAt(109, 43, "EAST") //Edited (was .startingAt(1, 1, "EAST"))
                     .backBefore(7000)
                     .withCrew(5)
                     .collecting(1000, "WOOD")
