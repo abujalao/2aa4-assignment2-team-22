@@ -127,12 +127,11 @@ public class Drone {
         //     return actionController.fly();
         // } 
         // return actionController.stop();
-
+        String[] availableDirs = availableDirections().get(getDirection());
         switch (actionController.getAction()) {
             case "":
                 return actionController.echo(getDirection());
             case "echo":
-                //if its looking at ground then fly towards it...
                 if(store.getResult().equals("GROUND")){
                     logger.info("I FOUDN GROUND");
                     if(getDirection() == actionController.getPastParameter("echo", "direction")){
@@ -140,9 +139,11 @@ public class Drone {
                         return actionController.fly();
                     }
                     else{
-                        return actionController.heading(getDirection());
+                        store.decrementRange();
+                        return actionController.heading(actionController.getPastParameter("echo", "direction"));
                     }
                 }
+                //if its looking at ground then fly towards it...
                 else{
                     //fly until you reach middle of map...
                     logger.info("Im FLYINGGGGG");
@@ -152,9 +153,8 @@ public class Drone {
 
             case "fly":
                 // When range is less than 30, echo in one direction at a time
-                if (store.getRange() < 30) {
+                if (store.getRange() < 30 && !store.getResult().equals("GROUND")) {
                     // Get the directions available for the current position
-                    String[] availableDirs = availableDirections().get(getDirection());
                     if (checks == 0){
                         checks++;
                         return actionController.echo(availableDirs[0]);
