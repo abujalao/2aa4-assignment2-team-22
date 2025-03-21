@@ -1,7 +1,6 @@
 package ca.mcmaster.se2aa4.island.team22;
 
 import java.io.StringReader;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +16,7 @@ public class Drone {
     private String direction;
     private StatusType status;
     Direction heading = Direction.E;
-    String action = "";
+    ActionController actionController = new ActionController();
 
     private ResponseStorage store = new ResponseStorage();
 
@@ -71,80 +70,27 @@ public class Drone {
         return status;
     }
 
-    public String fly(){
-        JSONObject decision = new JSONObject(Map.of(
-             "action", "fly"
-         ));
-
-        action = "fly";
-        return decision.toString();
-        
-    }
-
-    public String echo(String dir) {
-        // JSONObject decision = new JSONObject(Map.of(
-        //     "action", "echo",
-        //     "parameters", Map.of("direction", "E", "range", 2)
-        // ));
-        JSONObject decision = new JSONObject(Map.of(
-             "action", "echo",
-             "parameters", Map.of("direction", dir)
-         ));
-        // JSONObject decision = new JSONObject(Map.of(
-        //      "action", "scan"
-             
-        //  ));
-        action ="echo";
-        return decision.toString();
-    }
-
-    public String scan(){
-        JSONObject decision = new JSONObject(Map.of(
-             "action", "scan"
-             
-         ));
-         action ="scan";
-        return decision.toString();
-    }
-
-    public String changeHeading(String dir){
-        JSONObject decision = new JSONObject(Map.of(
-             "action", "heading",
-             "parameters", Map.of("direction", dir)
-         ));
-         action ="heading";
-        return decision.toString();
-    }
-
-    public String stop(){
-        JSONObject decision = new JSONObject(Map.of(
-             "action", "stop"
-         ));
-         action ="stop";
-        return decision.toString();
-    }
-
     public String makeMove() {
         if(!(store.getResult().equals(""))){
             if(store.getResult().equals("GROUND")){
                 if (store.getechoDir().equals("S")){
-                    return changeHeading("S");
+                    return actionController.changeHeading("S");
                 }
             }
         }
         if(store.getCost() == -1){
-            return echo("E");
+            return actionController.echo("E");
         }
         if(store.getPrevAction().equals("heading")){
-            return echo("S");
+            return actionController.echo("S");
         }
         if(store.getRange() > 25){
-            return fly();
+            return actionController.fly();
         }
         if(store.getPrevAction().equals("fly")){
-            return echo("S");
+            return actionController.echo("S");
         }
-        return stop();
+        return actionController.stop();
 
     }
 
@@ -157,7 +103,7 @@ public class Drone {
         updateStatus(response.getString("status"));
         JSONObject extraInfo = response.getJSONObject("extras");
         logger.info("Additional information received: {}", extraInfo);
-        store.storeResults(action, response);
+        store.storeResults(actionController.getAction(), response);
         
         
     }
