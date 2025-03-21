@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import java.util.*;
 
 import ca.mcmaster.se2aa4.island.team22.Drone.StatusType;
 
@@ -66,6 +67,22 @@ public class Drone {
         return actionController.getPastParameter("heading","direction"); //Last saved heading action parameter is the drone current direction.
     }
 
+    private Map<String, String[]> availableDirections(){
+        Map<String, String[]> availableDirections = new HashMap<>();
+        switch(getDirection()){
+            case "S":
+            case "N":
+                availableDirections.put(getDirection(), new String[]{"W", "E"});
+                break;
+            case "E":
+            case "W":
+                availableDirections.put(getDirection(), new String[]{"N", "S"});
+                break;
+        }
+
+        return availableDirections;
+    }
+
     private Boolean canChangeDirection(String direction) { //check if drone can change to given direction
         return (!direction.equals(this.getDirection()) && !direction.equals(DirectionUtil.Opposite_Directions.get(direction))); //if given direction!=drone direction AND given direction!=Opposite direction then true
     }
@@ -80,6 +97,9 @@ public class Drone {
                 if (actionController.getPastParameter("echo","direction").equals("S") && canChangeDirection("S")){ //If past echo was ground && If drone can change direction (ex. if the drone is already heading south dont change heading to south again, this will stop the game)
                     return actionController.heading("S");
                 }
+        }
+        if(store.getResult().equals("GROUND") && store.getRange() == 0 ){
+            return actionController.scan();
         }
         if(store.getCost() == -1){ //First run when cost is at default amount of -1
             return actionController.echo("E");
