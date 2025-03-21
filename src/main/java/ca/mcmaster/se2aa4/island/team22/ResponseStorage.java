@@ -3,23 +3,26 @@ package ca.mcmaster.se2aa4.island.team22;
 import org.json.JSONObject;
 
 public class ResponseStorage {
-    private String result;
-    private int range;
-    private int cost;
-    private String echoDir;
+    private String result = "";
+    private int range = -1;
+    private int cost = -1;
+    private boolean is_out_range;
 
-    private String prevDecision;
-
-    public ResponseStorage(){
-        clear();
-    }
+    // public ResponseStorage(){
+    // }
 
     public void clear(){
         result = "";
         range = -1;
         cost = -1;
-        prevDecision = "";
-        echoDir = "";
+    }
+
+    private void setRange(Integer value){
+        this.range=value;
+    }
+
+    public void decrementRange(){ //decrement by one
+        setRange(this.range-1);
     }
 
     public int getCost(){
@@ -34,26 +37,15 @@ public class ResponseStorage {
         return result;
     }
 
-    public String getPrevAction(){
-        return prevDecision;
-    }
-
-    public String getechoDir(){
-        return echoDir;
-    }
-
     public void storeResults(String decision, JSONObject prevResponse){
-        clear();
-        cost = prevResponse.getInt("cost");
-
+        JSONObject extraInfo = prevResponse.getJSONObject("extras");
         if(decision.equals("echo")){
-            range = prevResponse.getJSONObject("extras").getInt("range");
-            result = prevResponse.getJSONObject("extras").getString("found");
-            echoDir = prevResponse.getJSONObject("parameters").getString("direction");
+            if (extraInfo.getString("found").equals("OUT_OF_RANGE")){
+                clear();//clear only if its out of range because we are need to keep running echo until ground is found
+            }
+            range = extraInfo.getInt("range");
+            result = extraInfo.getString("found");
         }
-
-        
-        prevDecision = decision;
-
+        cost = prevResponse.getInt("cost");
     }
 }
