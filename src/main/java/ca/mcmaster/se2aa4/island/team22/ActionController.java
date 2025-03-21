@@ -12,6 +12,7 @@ public class ActionController {
     private final Logger logger = LogManager.getLogger();
     private String action = "";
     private final Map<String, Map> pastParameters = new HashMap<>(); //save last parameter given in createAction() call
+    String parameter = "";
     
     private void setAction(String action) {
         this.action = action;
@@ -81,6 +82,8 @@ public class ActionController {
             "people", people
         ));
     }
+
+    
 
     public String move_to(String dir) {
         return createAction("move_to",Map.of("direction", dir));

@@ -7,6 +7,7 @@ public class ResponseStorage {
     private int range = -1;
     private int cost = -1;
     private boolean is_out_range;
+    String previousEchoResult;
 
     // public ResponseStorage(){
     // }
