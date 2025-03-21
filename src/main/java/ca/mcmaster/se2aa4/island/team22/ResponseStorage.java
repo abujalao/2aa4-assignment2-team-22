@@ -3,12 +3,12 @@ package ca.mcmaster.se2aa4.island.team22;
 import org.json.JSONObject;
 
 public class ResponseStorage {
-    String result;
-    int range;
-    int cost;
-    String echoDir;
+    private String result;
+    private int range;
+    private int cost;
+    private String echoDir;
 
-    String prevDecision;
+    private String prevDecision;
 
     public ResponseStorage(){
         clear();
