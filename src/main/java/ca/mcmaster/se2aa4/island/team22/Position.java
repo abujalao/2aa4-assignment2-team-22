@@ -23,6 +23,10 @@ public class Position {
         return new int[] {x, y};
     }
 
+    public Position getPos(){
+        return this;
+    }
+
     public int getX(){ 
         return x;
     }

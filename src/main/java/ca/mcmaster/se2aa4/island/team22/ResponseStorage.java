@@ -7,6 +7,8 @@ public class ResponseStorage {
     private int range = -1;
     private int cost = -1;
 
+    JSONObject prevResponse;
+
     // public ResponseStorage(){
     // }
 
@@ -36,8 +38,14 @@ public class ResponseStorage {
         return result;
     }
 
+    public JSONObject getPrevResponse(){
+        return prevResponse;
+    }
+
     public void storeResults(String decision, JSONObject prevResponse){
         JSONObject extraInfo = prevResponse.getJSONObject("extras");
+        this.prevResponse = prevResponse;
+        
         if(decision.equals("echo")){
             if (extraInfo.getString("found").equals("OUT_OF_RANGE")){
                 clear();//clear only if its out of range because we are need to keep running echo until ground is found
@@ -45,6 +53,8 @@ public class ResponseStorage {
             range = extraInfo.getInt("range");
             result = extraInfo.getString("found");
         }
+
+
         cost = prevResponse.getInt("cost");
     }
 }

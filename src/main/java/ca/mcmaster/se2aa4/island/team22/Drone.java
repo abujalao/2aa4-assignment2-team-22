@@ -27,6 +27,8 @@ public class Drone implements IDroneMove {
     private DroneState currentState = DroneState.find_island; //first thing to do is to find island
     private final HashSet<String> requiredDirections = new HashSet<>(); //Directions we need to take to reach to the base. 
     private final ResponseStorage store = new ResponseStorage();
+    private final PointsOfInterest pois = new PointsOfInterest(store);
+    private final Maps map = new Maps(this, pois);
 
     static int checks = 0;
 
@@ -40,6 +42,10 @@ public class Drone implements IDroneMove {
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
         
+    }
+
+    public Position getDronePosition(){
+        return this.dronePosition.getPos();
     }
 
     @Override
@@ -145,6 +151,10 @@ public class Drone implements IDroneMove {
         logger.info("DRONE POSITION: "+dronePosition.getStringPosition());
         logger.info("Available Directions: {}", String.join(", ", availableDirections()));
 
+        //base case: if battery level is low, just return to base to avoid losing the drone
+        if(batteryLevel < 30){
+            return actionController.stop();
+        }
         String[] availableDirs = availableDirections();
         switch (actionController.getAction()) {
             case "":
@@ -204,9 +214,11 @@ public class Drone implements IDroneMove {
             case "heading":
                 return actionController.fly();
             case "scan":
+                pois.storeScan();
+                map.addPOI();
                 currentState = DroneState.return_base;//testing return_base state
             default:
-                return flyBackMove();
+                return actionController.stop();
         }
     }
 
