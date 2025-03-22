@@ -1,22 +1,22 @@
 package ca.mcmaster.se2aa4.island.team22;
 
 import java.io.StringReader;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import java.util.*;
 
 import ca.mcmaster.se2aa4.island.team22.Drone.StatusType;
 
 
-public class Drone {
+public class Drone implements IDroneMove {
     private final Logger logger = LogManager.getLogger();
     private int batteryLevel;
     private StatusType status;
-    
-    private final ActionController actionController = new ActionController();
+    private final Position dronePosition = new Position(1,1); //The reference starting point will always be (1,1) make sure we return to this position after we are done
+    private final ActionController actionController = new ActionController(getMoveInterface());
 
     private final ResponseStorage store = new ResponseStorage();
 
@@ -32,6 +32,13 @@ public class Drone {
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
         
+    }
+
+    @Override
+    public void moveDrone(int x, int y) { //change drone position by taking x and y values and adding to the current drone position. (ex. if drone position is (30,41) and given moveDrone (5,6) new location is (35,47)
+        int[] currentPosition = this.dronePosition.getPosition();
+        this.dronePosition.setPosition(currentPosition[0]+x,currentPosition[1]+y);
+        logger.info("Position Updated: "+ dronePosition.getStringPosition());
     }
 
     private void setBattery(int value) {
@@ -69,20 +76,12 @@ public class Drone {
         return actionController.getPastParameter("heading","direction"); //Last saved heading action parameter is the drone current direction.
     }
 
-    private Map<String, String[]> availableDirections(){
-        Map<String, String[]> availableDirections = new HashMap<>();
-        switch(getDirection()){
-            case "S":
-            case "N":
-                availableDirections.put(getDirection(), new String[]{"W", "E"});
-                break;
-            case "E":
-            case "W":
-                availableDirections.put(getDirection(), new String[]{"N", "S"});
-                break;
-        }
+    private IDroneMove getMoveInterface(){
+        return this;
+    }
 
-        return availableDirections;
+    private Map<String, String[]> availableDirections(){
+        return Map.of(getDirection(), DirectionUtil.Available_Directions.get(getDirection()));
     }
 
     private Boolean canChangeDirection(String direction) { //check if drone can change to given direction
@@ -133,8 +132,8 @@ public class Drone {
                 return actionController.echo(getDirection());
             case "echo":
                 if(store.getResult().equals("GROUND")){
-                    logger.info("I FOUDN GROUND");
-                    if(getDirection() == actionController.getPastParameter("echo", "direction")){
+                    logger.info("FOUND GROUND");
+                    if(getDirection().equals(actionController.getPastParameter("echo", "direction"))){
                         store.decrementRange();
                         return actionController.fly();
                     }

@@ -12,7 +12,11 @@ public class ActionController {
     private final Logger logger = LogManager.getLogger();
     private String action = "";
     private final Map<String, Map> pastParameters = new HashMap<>(); //save last parameter given in createAction() call
-    
+    private final IDroneMove droneMoveInterface;
+
+    public ActionController(IDroneMove moveInterface) {
+        this.droneMoveInterface = moveInterface;
+    }
     private void setAction(String action) {
         this.action = action;
     }
@@ -56,6 +60,9 @@ public class ActionController {
     
     //ACTIONS:
     public String fly(){
+        String Direction = getPastParameter("heading","direction"); //get current drone direction
+        int[] stepAmount = DirectionUtil.Fly_Increment.get(Direction); //amount of steps to add in position (x,y)
+        droneMoveInterface.moveDrone(stepAmount[0],stepAmount[1]);
         return createAction("fly");
     }
     
