@@ -15,8 +15,8 @@ public class DirectionUtil {
         "W", new String[]{"N", "S"}
     );
     public static final Map<String, int[]> Fly_Increment = Map.of( //Position amount to add for each direction on fly() aciton [(x,y) (horizontal,vertical)]
-        "N", new int[]{0,1},
-        "S", new int[]{0,-1},
+        "N", new int[]{0,-1},  //game take position reference point from top left as (1,1) so as you go right and down, x and y increase 
+        "S", new int[]{0,1},
         "E", new int[]{1,0},
         "W", new int[]{-1,0}
     );

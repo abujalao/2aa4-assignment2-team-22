@@ -1,7 +1,7 @@
 package ca.mcmaster.se2aa4.island.team22;
 
 import java.io.StringReader;
-import java.util.Map;
+import java.util.HashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,9 +15,17 @@ public class Drone implements IDroneMove {
     private final Logger logger = LogManager.getLogger();
     private int batteryLevel;
     private StatusType status;
-    private final Position dronePosition = new Position(1,1); //The reference starting point will always be (1,1) make sure we return to this position after we are done
+
+    private final int[] DEFAULT_POSITION = new int[] {1,1};//The reference starting point will always be (1,1) make sure we return to this position after we are done
+    private final Position dronePosition = new Position(DEFAULT_POSITION[0],DEFAULT_POSITION[1]); 
     private final ActionController actionController = new ActionController(getMoveInterface());
 
+    private enum DroneState {
+        find_island,
+        return_base,
+    }
+    private DroneState currentState = DroneState.find_island; //first thing to do is to find island
+    private final HashSet<String> requiredDirections = new HashSet<>(); //Directions we need to take to reach to the base. 
     private final ResponseStorage store = new ResponseStorage();
 
     static int checks = 0;
@@ -38,7 +46,6 @@ public class Drone implements IDroneMove {
     public void moveDrone(int x, int y) { //change drone position by taking x and y values and adding to the current drone position. (ex. if drone position is (30,41) and given moveDrone (5,6) new location is (35,47)
         int[] currentPosition = this.dronePosition.getPosition();
         this.dronePosition.setPosition(currentPosition[0]+x,currentPosition[1]+y);
-        logger.info("Position Updated: "+ dronePosition.getStringPosition());
     }
 
     private void setBattery(int value) {
@@ -80,104 +87,126 @@ public class Drone implements IDroneMove {
         return this;
     }
 
-    private Map<String, String[]> availableDirections(){
-        return Map.of(getDirection(), DirectionUtil.Available_Directions.get(getDirection()));
-    }
-
-    private Boolean canChangeDirection(String direction) { //check if drone can change to given direction
-        return (!direction.equals(this.getDirection()) && !direction.equals(DirectionUtil.Opposite_Directions.get(direction))); //if given direction!=drone direction AND given direction!=Opposite direction then true
-    }
-
-    private Boolean canEcho(String direction) { //check if drone can change to given direction
-        return (!direction.equals(DirectionUtil.Opposite_Directions.get(direction))); //if given echo direction!=Opposite direction then true (We cant echo the opposite direction)
+    private String[] availableDirections(){
+        return DirectionUtil.Available_Directions.get(getDirection());
     }
     
+    private String flyBackMove(){ //controls what action to take to get back to the base
+        if (currentState != DroneState.return_base) { //make sure we are in return_base state when we are at this point
+            this.currentState = DroneState.return_base;
+        }
+
+        int offset = 1; //offset for changing direction 
+
+        //check if there will be direction changes (when requiredDirections>1)
+        if(requiredDirections.size()==1) {
+            offset=0;
+        }
+
+        //check x
+        if (dronePosition.getX()>DEFAULT_POSITION[0]+offset) {
+            requiredDirections.add("W");
+        } else if (dronePosition.getX()<DEFAULT_POSITION[0]-offset) {
+            requiredDirections.add("E");
+        } else {
+            requiredDirections.remove("W");
+            requiredDirections.remove("E");
+            logger.info("REACHED X TARGET BASE");
+        }
+
+        //check y
+        if (dronePosition.getY()<DEFAULT_POSITION[0]-offset) { 
+            requiredDirections.add("S");
+        } else if (dronePosition.getY()>DEFAULT_POSITION[0]+offset) {
+            requiredDirections.add("N");
+        } else {
+            requiredDirections.remove("S");
+            requiredDirections.remove("N");
+            logger.info("REACHED Y TARGET BASE");
+        }
+
+        //check direction
+        if (!requiredDirections.isEmpty()) { //If its empty that means both conditions above are met
+            if (requiredDirections.contains(getDirection())) {
+                return actionController.fly();
+            } 
+            
+            for (String direction : availableDirections()) {
+                if (requiredDirections.contains(direction)) {
+                    return actionController.heading(direction);
+                }
+            }
+        }
+        return actionController.stop();//once reached base we can stop
+    }
+
     public String makeMove() {
         logger.info("DRONE DIRECTION: "+getDirection());
-        logger.info("Available Directions: {}", 
-            availableDirections().entrySet()
-                .stream()
-                .map(entry -> entry.getKey() + " -> " + String.join(", ", entry.getValue()))
-                .toList()
-        );
-        
-        // if(store.getResult().equals("GROUND")){ //if found ground on last result
-        //         if (actionController.getPastParameter("echo","direction").equals("S") && canChangeDirection("S")){ //If past echo was ground && If drone can change direction (ex. if the drone is already heading south dont change heading to south again, this will stop the game)
-        //             return actionController.heading("S");
-        //         }
-        // }
-        // if(store.getResult().equals("GROUND") && store.getRange() == 0 ){
-        //     return actionController.scan();
-        // }
-        // if(store.getCost() == -1){ //First run when cost is at default amount of -1
-        //     return actionController.echo("E");
-        // }
-        // if(actionController.getAction().equals("heading")){ //if last action was "heading"
-        //     return actionController.echo("S");
-        // }
-        // if(store.getRange() > 0 && store.getResult().equals("GROUND")){ //keep flying to ground until range is zero
-        //     store.decrementRange(); //update distance instead of echo update (1 fly = 1 range)
-        //     return actionController.fly();
-        // }
-        // if(actionController.getAction().equals("fly")){ //if last action was "fly"
-        //     return actionController.echo("S");
-        // }
-        // if(store.getRange() > 25 && store.getResult().equals("OUT_OF_RANGE")){ //We dont want to get close to "out of range"
-        //     return actionController.fly();
-        // } 
-        // return actionController.stop();
-        String[] availableDirs = availableDirections().get(getDirection());
+        logger.info("DRONE POSITION: "+dronePosition.getStringPosition());
+        logger.info("Available Directions: {}", String.join(", ", availableDirections()));
+
+        String[] availableDirs = availableDirections();
         switch (actionController.getAction()) {
             case "":
                 return actionController.echo(getDirection());
             case "echo":
-                if(store.getResult().equals("GROUND")){
-                    logger.info("FOUND GROUND");
-                    if(getDirection().equals(actionController.getPastParameter("echo", "direction"))){
+
+                if (currentState == DroneState.find_island) {
+                    if(store.getResult().equals("GROUND")){
+                        logger.info("FOUND GROUND");
+                        if(getDirection().equals(actionController.getPastParameter("echo", "direction"))){
+                            store.decrementRange();
+                            return actionController.fly();
+                        }
+                        else{
+                            store.decrementRange();
+                            return actionController.heading(actionController.getPastParameter("echo", "direction"));
+                        }
+                    }
+                    //if its looking at ground then fly towards it...
+                    else{
+                        //fly until you reach middle of map...
+                        logger.info("Im FLYINGGGGG");
                         store.decrementRange();
                         return actionController.fly();
                     }
-                    else{
-                        store.decrementRange();
-                        return actionController.heading(actionController.getPastParameter("echo", "direction"));
-                    }
                 }
-                //if its looking at ground then fly towards it...
-                else{
-                    //fly until you reach middle of map...
-                    logger.info("Im FLYINGGGGG");
-                    store.decrementRange();
-                    return actionController.fly();
-                }
+                
 
             case "fly":
-                // When range is less than 30, echo in one direction at a time
-                if (store.getRange() < 30 && !store.getResult().equals("GROUND")) {
-                    // Get the directions available for the current position
-                    if (checks == 0){
-                        checks++;
-                        return actionController.echo(availableDirs[0]);
-                    }
-                    else{
-                        checks = 0;
-                        return actionController.echo(availableDirs[1]);
-                    }
+                if (currentState == DroneState.find_island) {
+                    // When range is less than 30, echo in one direction at a time
+                    if (store.getRange() < 30 && !store.getResult().equals("GROUND")) {
+                        // Get the directions available for the current position
+                        if (checks == 0){
+                            checks++;
+                            return actionController.echo(availableDirs[0]);
+                        }
+                        else{
+                            checks = 0;
+                            return actionController.echo(availableDirs[1]);
+                        }
 
-                } else {
-                    if(store.getRange() != 0){
-                        // If range is greater than 30, just keep flying and decrement range
-                        // and if you havent reached ground...
-                        store.decrementRange();
-                        return actionController.fly();
-                    }
-                    if (store.getRange() == 0){
-                        return actionController.scan();
-                    }
+                    } else {
+                        if(store.getRange() != 0){
+                            // If range is greater than 30, just keep flying and decrement range
+                            // and if you havent reached ground...
+                            store.decrementRange();
+                            return actionController.fly();
+                        }
+                        if (store.getRange() == 0){
+                            return actionController.scan();
+                        }
+                    } 
+                } else if (currentState == DroneState.return_base) {
+                    return flyBackMove();
                 }
             case "heading":
                 return actionController.fly();
+            case "scan":
+                currentState = DroneState.return_base;//testing return_base state
             default:
-                return actionController.stop();
+                return flyBackMove();
         }
     }
 

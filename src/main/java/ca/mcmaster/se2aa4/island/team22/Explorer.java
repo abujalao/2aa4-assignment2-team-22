@@ -26,7 +26,9 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String takeDecision() {
-        return drone.makeMove();
+        String s = drone.makeMove();
+        logger.info("DECISION: "+s);
+        return s;
     }
 
     @Override

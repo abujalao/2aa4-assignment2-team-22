@@ -67,6 +67,11 @@ public class ActionController {
     }
     
     public String heading(String dir){
+        String currentDir = getPastParameter("heading","direction"); //get current drone direction
+        int[] stepAmountCurrent = DirectionUtil.Fly_Increment.get(currentDir); //amount of steps in current direction 
+        int[] stepAmountNew = DirectionUtil.Fly_Increment.get(dir); //amount of steps in new direction
+        logger.info("Change direction from {} to {}. Move step is ({},{})",currentDir,dir,stepAmountCurrent[0]+stepAmountNew[0],stepAmountCurrent[1]+stepAmountNew[1]);
+        droneMoveInterface.moveDrone(stepAmountCurrent[0]+stepAmountNew[0],stepAmountCurrent[1]+stepAmountNew[1]);//When turning around the drone will take a step in the current direction + the direction where it wants to go. If im north and its going east it will take one step north + one step east
         return createAction("heading",Map.of("direction", dir));
     }
 

@@ -6,7 +6,6 @@ public class ResponseStorage {
     private String result = "";
     private int range = -1;
     private int cost = -1;
-    private boolean is_out_range;
 
     // public ResponseStorage(){
     // }
