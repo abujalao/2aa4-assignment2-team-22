@@ -2,7 +2,7 @@ package ca.mcmaster.se2aa4.island.team22;
 
 import org.json.JSONObject;
 
-public class ResponseStorage {
+public class ResponseStorage implements IStorage {
     private String result = "";
     private int range = -1;
     private int cost = -1;
@@ -22,6 +22,7 @@ public class ResponseStorage {
         this.range=value;
     }
 
+    @Override
     public void decrementRange(){ //decrement by one
         setRange(this.range-1);
     }
@@ -30,18 +31,25 @@ public class ResponseStorage {
         return cost;
     }
 
+    @Override
     public int getRange(){
         return range;
     }
 
+    @Override
     public String getResult(){
         return result;
     }
 
+    @Override
     public JSONObject getPrevResponse(){
         return prevResponse;
     }
 
+    public IStorage getStorageInterface(){
+        return this;
+    }
+    
     public void storeResults(String decision, JSONObject prevResponse){
         JSONObject extraInfo = prevResponse.getJSONObject("extras");
         this.prevResponse = prevResponse;
