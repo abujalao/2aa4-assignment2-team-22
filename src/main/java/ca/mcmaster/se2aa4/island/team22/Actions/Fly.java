@@ -43,9 +43,6 @@ public class Fly extends Action {
         checkNull();
         String[] availableDirs = getDroneInterface().availableDirections();
         storageInterface.decrementRange();
-        if (droneInterface.getDronePosition().equals(new Position(21, 52))){
-            return actionControlInterface.getAction(ActionType.stop).execute();
-        }
         if (getDroneInterface().getCurrentState() == Drone.DroneState.find_island) {
                 // When range is less than 30, echo in one direction at a time
                 if (!storageInterface.getResult().equals("GROUND")) {
@@ -68,6 +65,11 @@ public class Fly extends Action {
                         return this.execute();
                     }
                     if (storageInterface.getRange() <= 0){
+                        droneInterface.setIslandFound(true);
+                        if (droneInterface.canSaveThem()){
+                            logger.info("Have found save places.");
+                            return actionControlInterface.getAction(ActionType.stop).execute();
+                        }
                         return actionControlInterface.getAction(ActionType.scan).execute();
                     }
                 } 

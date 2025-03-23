@@ -13,6 +13,7 @@ public interface IDroneAction { //methods needed for fly action (!!bloated inter
     public void resetDroneChecks();
     public boolean getIslandFound();
     public void setIslandFound(boolean value);
+    public boolean canSaveThem();
     public int[] getDronePosition();
     public int getDroneScan();
     public void incrementScan();

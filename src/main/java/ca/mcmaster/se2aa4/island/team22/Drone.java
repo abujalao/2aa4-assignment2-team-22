@@ -80,6 +80,11 @@ public class Drone implements IDroneAction {
         this.islandFound = value;
     }
 
+    @Override
+    public boolean canSaveThem(){
+        return map.canSaveThem();
+    }
+
 
     private void decrementBattery(int value){
         if (value > 0){
@@ -104,6 +109,8 @@ public class Drone implements IDroneAction {
     public boolean getIslandFound(){
         return islandFound;
     }
+
+    
 
     @Override
     public DroneState getCurrentState() {
