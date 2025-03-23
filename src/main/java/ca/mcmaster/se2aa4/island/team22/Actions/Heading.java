@@ -40,7 +40,7 @@ public class Heading extends Action {
     }
 
     @Override
-    public String checkMove(String[] availableDirs) {
+    public String checkMove() {
         checkNull();
         return actionControlInterface.getAction(ActionType.fly).execute();
     }

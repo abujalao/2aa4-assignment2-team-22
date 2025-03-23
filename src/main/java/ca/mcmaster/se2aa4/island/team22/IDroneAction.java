@@ -7,4 +7,5 @@ public interface IDroneAction { //methods needed for fly action
     public IStorage getStorageInterface();
     public IActionManage getActionManagerInterface();
     public String getDirection();
+    public String[] availableDirections();
 }

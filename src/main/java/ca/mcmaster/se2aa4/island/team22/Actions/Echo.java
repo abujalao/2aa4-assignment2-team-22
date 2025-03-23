@@ -38,7 +38,7 @@ public class Echo extends Action {
     }
 
     @Override
-    public String checkMove(String[] availableDirs) {
+    public String checkMove() {
         checkNull();
         if (getDroneInterface().getCurrentState() == Drone.DroneState.find_island) {
             logger.info("FINDING2");

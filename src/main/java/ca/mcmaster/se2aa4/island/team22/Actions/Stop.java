@@ -15,7 +15,7 @@ public class Stop extends Action {
     }
 
     @Override
-    public String checkMove(String[] availableDirs) {
+    public String checkMove() {
         return this.execute();
     }
 }

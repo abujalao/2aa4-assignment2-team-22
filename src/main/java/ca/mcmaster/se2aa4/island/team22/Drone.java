@@ -89,7 +89,7 @@ public class Drone implements IDroneAction {
         return actionManager;
     }
 
-    private String[] availableDirections(){
+    public String[] availableDirections(){
         return DirectionUtil.Available_Directions.get(getDirection());
     }
 
@@ -102,8 +102,7 @@ public class Drone implements IDroneAction {
         if(batteryLevel < 30){
             return actionManager.getAction(ActionType.stop).execute();
         }
-        String[] availableDirs = availableDirections();
-        return actionManager.getAction().checkMove(availableDirs);
+        return actionManager.getAction().checkMove();
     }
 
     public void updateDrone(String s) {

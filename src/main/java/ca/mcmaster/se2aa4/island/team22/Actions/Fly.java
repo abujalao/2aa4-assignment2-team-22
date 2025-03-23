@@ -35,8 +35,9 @@ public class Fly extends Action {
     }
 
     @Override
-    public String checkMove(String[] availableDirs) {
+    public String checkMove() {
         checkNull();
+        String[] availableDirs = getDroneInterface().availableDirections();
         if (getDroneInterface().getCurrentState() == Drone.DroneState.find_island) {
                 // When range is less than 30, echo in one direction at a time
                 if (storageInterface.getRange() < 30 && !storageInterface.getResult().equals("GROUND")) {

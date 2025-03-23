@@ -17,7 +17,7 @@ public class Scan extends Action {
     }
 
     @Override
-    public String checkMove(String[] availableDirs) {
+    public String checkMove() {
         if (actionControlInterface==null) {
             this.actionControlInterface=droneInterface.getActionManagerInterface();
         }

@@ -8,7 +8,12 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
-import ca.mcmaster.se2aa4.island.team22.Actions.*;
+import ca.mcmaster.se2aa4.island.team22.Actions.Action;
+import ca.mcmaster.se2aa4.island.team22.Actions.Echo;
+import ca.mcmaster.se2aa4.island.team22.Actions.Fly;
+import ca.mcmaster.se2aa4.island.team22.Actions.Heading;
+import ca.mcmaster.se2aa4.island.team22.Actions.Scan;
+import ca.mcmaster.se2aa4.island.team22.Actions.Stop;
 
 public class ActionManager implements IActionManage{
 
@@ -20,10 +25,8 @@ public class ActionManager implements IActionManage{
     final Map<ActionType, Action> actions = new HashMap<>(); //available actions to perform
     private Action action;
     private final Map<ActionType, Map> pastParameters = new HashMap<>(); //save last parameter given in createAction() call
-    private final IDroneAction droneMoveInterface;
 
     public ActionManager(IDroneAction droneInterface) {
-        this.droneMoveInterface = droneInterface;
         //initialize all actions manually
         actions.put(ActionType.heading, new Heading(droneInterface));
         actions.put(ActionType.echo, new Echo(droneInterface));

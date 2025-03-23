@@ -41,5 +41,5 @@ public abstract class Action implements IActionExecute, IActionCheck {
     @Override
     public abstract String execute(Object... parameters);
     @Override
-    public abstract String checkMove(String[] availableDirs);
+    public abstract String checkMove();
 }
