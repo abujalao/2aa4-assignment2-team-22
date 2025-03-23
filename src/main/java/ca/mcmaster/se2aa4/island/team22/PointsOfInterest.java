@@ -28,6 +28,13 @@ public class PointsOfInterest {
         }
     }
 
+    public List<String> getSites(){
+        return sites;
+    }
+    public List<String> getCreeks(){
+        return creeks;
+    }
+
     // Store the scan data into lists
     public void storeScan() {
         JSONObject response = store.getPrevResponse();

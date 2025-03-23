@@ -1,6 +1,7 @@
 package ca.mcmaster.se2aa4.island.team22;
 
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,11 @@ public class Drone implements IDroneMove {
     private final int[] DEFAULT_POSITION = new int[] {1,1};//The reference starting point will always be (1,1) make sure we return to this position after we are done
     private final Position dronePosition = new Position(DEFAULT_POSITION[0],DEFAULT_POSITION[1]); 
     private final ActionController actionController = new ActionController(getMoveInterface());
+
+    private int scanCount = 0;
+    private String oppositeDir = "";
+
+    private boolean islandFound = false;
 
     private enum DroneState {
         find_island,
@@ -156,20 +162,21 @@ public class Drone implements IDroneMove {
             return actionController.stop();
         }
         String[] availableDirs = availableDirections();
-        switch (actionController.getAction()) {
+        switch (actionController.getAction()){
             case "":
                 return actionController.echo(getDirection());
             case "echo":
-
+                
                 if (currentState == DroneState.find_island) {
                     if(store.getResult().equals("GROUND")){
                         logger.info("FOUND GROUND");
                         if(getDirection().equals(actionController.getPastParameter("echo", "direction"))){
-                            store.decrementRange();
                             return actionController.fly();
                         }
                         else{
                             store.decrementRange();
+                            oppositeDir = DirectionUtil.Opposite_Directions.get(getDirection());
+                            logger.info("dir is:" + getDirection() + "Opposite is: " + oppositeDir);
                             return actionController.heading(actionController.getPastParameter("echo", "direction"));
                         }
                     }
@@ -177,16 +184,37 @@ public class Drone implements IDroneMove {
                     else{
                         //fly until you reach middle of map...
                         logger.info("Im FLYINGGGGG");
-                        store.decrementRange();
-                        return actionController.fly();
+                        if (checks == 0){
+                            checks++;
+                            return actionController.echo(availableDirs[0]);
+                        }
+                        else if(checks == 1){
+                            checks++;
+                            return actionController.echo(availableDirs[1]);
+                        }
+                        else{
+                            checks = 0;
+                            if(!islandFound){
+                                return actionController.fly();
+
+                            }
+                            else{
+                                oppositeDir = DirectionUtil.Opposite_Directions.get(getDirection());
+                                return actionController.heading(availableDirs[1]);
+                            }
+                        }
                     }
                 }
                 
 
             case "fly":
+                store.decrementRange();
+                if (dronePosition.equals(new Position(21, 52))){
+                    return actionController.stop();
+                }
                 if (currentState == DroneState.find_island) {
                     // When range is less than 30, echo in one direction at a time
-                    if (store.getRange() < 30 && !store.getResult().equals("GROUND")) {
+                    if (!store.getResult().equals("GROUND")) {
                         // Get the directions available for the current position
                         if (checks == 0){
                             checks++;
@@ -198,13 +226,15 @@ public class Drone implements IDroneMove {
                         }
 
                     } else {
-                        if(store.getRange() != 0){
+                        logger.info("range is: " + store.getRange());
+                        if(store.getRange() > 0){
                             // If range is greater than 30, just keep flying and decrement range
                             // and if you havent reached ground...
                             store.decrementRange();
                             return actionController.fly();
                         }
-                        if (store.getRange() == 0){
+                        if (store.getRange() <= 0){
+                            islandFound = true;
                             return actionController.scan();
                         }
                     } 
@@ -212,11 +242,35 @@ public class Drone implements IDroneMove {
                     return flyBackMove();
                 }
             case "heading":
-                return actionController.fly();
+                if (!islandFound){
+                    return actionController.fly();
+                }
+                else{
+                    if (scanCount == 0){
+                        scanCount++;
+                        return actionController.heading(oppositeDir);
+                    }
+                    else{
+                        scanCount = 0;
+                        return actionController.fly();
+                    }
+                }
             case "scan":
                 pois.storeScan();
                 map.addPOI();
-                currentState = DroneState.return_base;//testing return_base state
+                //currentState = DroneState.return_base;//testing return_base state
+                if (scanCount == 0){
+                    scanCount++;
+                    return actionController.scan();
+                }
+                else{
+                    scanCount = 0;
+                    // if (map.canSaveThem()){
+                    //     logger.info("youve done it.");
+                    //     return actionController.stop();
+                    // }
+                    return actionController.echo(getDirection());
+                }
             default:
                 return actionController.stop();
         }
