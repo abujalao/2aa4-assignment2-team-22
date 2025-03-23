@@ -21,6 +21,12 @@ public class Drone implements IDroneAction {
         find_island,
         return_base,
     }
+
+    private int scanCount = 0; //!!Need refactor (not much related to drone) drone state?
+    private String oppositeDir = ""; //not needed use methods
+    private int droneChecks = 0; //!!Need refactor (not much related to drone) drone state?
+ 
+    private boolean islandFound = false; //!!Need refactor (not much related to drone) drone state?
     private DroneState currentState = DroneState.find_island; //first thing to do is to find island
     private final HashSet<String> requiredDirections = new HashSet<>(); //Directions we need to take to reach to the base. 
     private final ResponseStorage store = new ResponseStorage();
@@ -39,8 +45,8 @@ public class Drone implements IDroneAction {
         
     }
 
-    public Position getDronePosition(){
-        return this.dronePosition.getPos();
+    public int[] getDronePosition(){
+        return this.dronePosition.getPosition();
     }
 
     @Override
@@ -49,12 +55,32 @@ public class Drone implements IDroneAction {
         this.dronePosition.setPosition(currentPosition[0]+x,currentPosition[1]+y);
     }
 
+    public void incrementDroneChecks(){
+        this.droneChecks++;
+    }
+    public void incrementScan(){
+        this.scanCount++;
+    }
+
+    public void resetDroneChecks(){
+        this.droneChecks = 0;
+    }
+    public void resetScan(){
+        this.scanCount = 0;
+    }
+
     private void setBattery(int value) {
         if (batteryLevel-value <0) value = batteryLevel;
         this.batteryLevel = value;
         logger.info("The battery of the drone is {}", getBattery());   
     }
     
+    @Override
+    public void setIslandFound(boolean value){
+        this.islandFound = value;
+    }
+
+
     private void decrementBattery(int value){
         if (value > 0){
             setBattery(batteryLevel-value);
@@ -63,6 +89,20 @@ public class Drone implements IDroneAction {
 
     public int getBattery() {
         return batteryLevel;
+    }
+
+    @Override
+    public int getDroneChecks(){
+        return this.droneChecks;
+    }
+
+    public int getDroneScan(){
+        return this.scanCount;
+    }
+
+    @Override
+    public boolean getIslandFound(){
+        return islandFound;
     }
 
     @Override
@@ -87,6 +127,16 @@ public class Drone implements IDroneAction {
     @Override
     public IActionManage getActionManagerInterface(){
         return actionManager;
+    }
+
+    @Override
+    public IPoi getPoiInterface(){
+        return pois;
+    }
+
+    @Override
+    public IMap getMapInterface(){
+        return map;
     }
 
     public String[] availableDirections(){

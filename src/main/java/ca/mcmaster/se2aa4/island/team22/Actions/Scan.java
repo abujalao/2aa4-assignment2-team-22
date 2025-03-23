@@ -21,6 +21,20 @@ public class Scan extends Action {
         if (actionControlInterface==null) {
             this.actionControlInterface=droneInterface.getActionManagerInterface();
         }
-        return actionControlInterface.getAction(ActionType.stop).execute(); //This wasnt in under "fly" case
+        droneInterface.getPoiInterface().storeScan(); 
+        droneInterface.getMapInterface().addPOI();
+        //currentState = DroneState.return_base;//testing return_base state
+        if (droneInterface.getDroneScan() == 0){
+            droneInterface.incrementScan();
+            return actionControlInterface.getAction(ActionType.scan).execute();
+        }
+        else{
+            droneInterface.resetScan();
+            // if (map.canSaveThem()){
+            //     logger.info("youve done it.");
+            //     return actionController.stop();
+            // }
+            return actionControlInterface.getAction(ActionType.echo).execute(droneInterface.getDirection());
+        }
     }
 }

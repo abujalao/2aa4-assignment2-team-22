@@ -1,11 +1,12 @@
 package ca.mcmaster.se2aa4.island.team22;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class PointsOfInterest {
+public class PointsOfInterest implements IPoi{
     //reference for the storage class
     private final ResponseStorage store;
     private List<String> creeks;
@@ -28,6 +29,12 @@ public class PointsOfInterest {
         }
     }
 
+    public List<String> getSites(){
+        return sites;
+    }
+    public List<String> getCreeks(){
+        return creeks;
+    }
     // Store the scan data into lists
     public void storeScan() {
         JSONObject response = store.getPrevResponse();

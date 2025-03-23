@@ -1,16 +1,20 @@
 package ca.mcmaster.se2aa4.island.team22.Actions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.DirectionUtil;
 import ca.mcmaster.se2aa4.island.team22.Drone;
 import ca.mcmaster.se2aa4.island.team22.IActionManage;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
 import ca.mcmaster.se2aa4.island.team22.IStorage;
+import ca.mcmaster.se2aa4.island.team22.Position;
 
 public class Fly extends Action {
+    private final Logger logger = LogManager.getLogger();
     private IStorage storageInterface;
     private IActionManage actionControlInterface;
-    int checks=0;
     public Fly(IDroneAction droneInterface) {
         super(droneInterface);
         this.storageInterface = droneInterface.getStorageInterface();
@@ -38,27 +42,32 @@ public class Fly extends Action {
     public String checkMove() {
         checkNull();
         String[] availableDirs = getDroneInterface().availableDirections();
+        storageInterface.decrementRange();
+        if (droneInterface.getDronePosition().equals(new Position(21, 52))){
+            return actionControlInterface.getAction(ActionType.stop).execute();
+        }
         if (getDroneInterface().getCurrentState() == Drone.DroneState.find_island) {
                 // When range is less than 30, echo in one direction at a time
-                if (storageInterface.getRange() < 30 && !storageInterface.getResult().equals("GROUND")) {
+                if (!storageInterface.getResult().equals("GROUND")) {
                     // Get the directions available for the current position
-                    if (checks == 0){
-                        checks++;
+                    if (droneInterface.getDroneChecks() == 0){
+                        droneInterface.incrementDroneChecks();
                         return actionControlInterface.getAction(ActionType.echo).execute(availableDirs[0]);
                     }
                     else{
-                        checks = 0;
+                        droneInterface.resetDroneChecks();
                         return actionControlInterface.getAction(ActionType.echo).execute(availableDirs[1]);
                     }
 
                 } else {
-                    if(storageInterface.getRange() != 0){
+                    logger.info("range is: " + storageInterface.getRange());
+                    if(storageInterface.getRange() > 0){
                         // If range is greater than 30, just keep flying and decrement range
                         // and if you havent reached ground...
                         storageInterface.decrementRange();
                         return this.execute();
                     }
-                    if (storageInterface.getRange() == 0){
+                    if (storageInterface.getRange() <= 0){
                         return actionControlInterface.getAction(ActionType.scan).execute();
                     }
                 } 

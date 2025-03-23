@@ -42,6 +42,20 @@ public class Heading extends Action {
     @Override
     public String checkMove() {
         checkNull();
-        return actionControlInterface.getAction(ActionType.fly).execute();
+        if (!droneInterface.getIslandFound()){
+             return actionControlInterface.getAction(ActionType.fly).execute();
+        }
+        else{
+            if (droneInterface.getDroneScan() == 0){
+                droneInterface.incrementScan();
+                
+                String oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
+                return actionControlInterface.getAction(ActionType.heading).execute(oppositeDir); 
+            }
+            else{
+                droneInterface.resetScan();
+                return actionControlInterface.getAction(ActionType.fly).execute(); 
+            }
+        }
     }
 }
