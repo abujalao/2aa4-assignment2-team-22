@@ -64,6 +64,7 @@ public class InterlaceScan extends State {
         }
         if(droneInterface.isbiomeOcean()){
             logger.info("Biome is ocean, turning...");
+            this.oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
             if (droneInterface.getChangeScanDir()){
                 return actionControlInterface.execute(ActionType.heading,availableDirs[0]);
             }
@@ -79,7 +80,6 @@ public class InterlaceScan extends State {
                 if(droneInterface.getStartOppositeScanning()){
                     return actionControlInterface.execute(ActionType.fly);
                 }
-                logger.info("OPPOSITEDIR: "+oppositeDir);
                 return actionControlInterface.execute(ActionType.heading,oppositeDir);
             }
             else{
