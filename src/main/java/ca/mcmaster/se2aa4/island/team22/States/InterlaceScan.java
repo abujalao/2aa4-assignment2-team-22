@@ -10,7 +10,6 @@ import ca.mcmaster.se2aa4.island.team22.DirectionUtil;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
 
 public class InterlaceScan extends State {
-    String oppositeDir;
     public InterlaceScan(IDroneAction droneInterface) {
         super(droneInterface, droneInterface.getStorageInterface(), droneInterface.getActionManagerInterface());
     }
