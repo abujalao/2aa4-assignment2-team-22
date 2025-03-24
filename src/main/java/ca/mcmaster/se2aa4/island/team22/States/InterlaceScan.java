@@ -10,6 +10,8 @@ import ca.mcmaster.se2aa4.island.team22.DirectionUtil;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
 
 public class InterlaceScan extends State {
+    int scanCounter=0;
+    String oppositeDir = "";
     public InterlaceScan(IDroneAction droneInterface) {
         super(droneInterface, droneInterface.getStorageInterface(), droneInterface.getActionManagerInterface());
     }
@@ -22,8 +24,8 @@ public class InterlaceScan extends State {
     @Override
     protected String performCheck(Fly action) {
         String[] availableDirs = droneInterface.availableDirections();
+        this.oppositeDir = "";
         storageInterface.decrementRange();
-        String oppositeDir = "";
         if(droneInterface.getStartOppositeScanning() && !oppositeDir.equals("")){
             return actionControlInterface.execute(ActionType.heading,oppositeDir);
         }
@@ -34,7 +36,7 @@ public class InterlaceScan extends State {
         if(storageInterface.getRange() > -1 && !storageInterface.getResult().equals("GROUND")){
             droneInterface.setStartOppositeScanning(true);
             droneInterface.setChangeScanDir(true);
-            oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
+            this.oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
             return actionControlInterface.execute(ActionType.heading,availableDirs[0]);
         }
         if (storageInterface.getResult().equals("GROUND")){
@@ -72,15 +74,16 @@ public class InterlaceScan extends State {
     @Override
     protected String performCheck(Heading action) {
         Scan scanAction = (Scan) actionControlInterface.getCountInterface(ActionType.scan);
-        if (scanAction.getCount() == 0){
-                scanAction.incrementCount();
+        if (scanCounter == 0){
+                scanCounter++;
                 if(droneInterface.getStartOppositeScanning()){
                     return actionControlInterface.execute(ActionType.fly);
                 }
-                return actionControlInterface.execute(ActionType.heading,DirectionUtil.Opposite_Directions.get(droneInterface.getDirection()));
+                logger.info("OPPOSITEDIR: "+oppositeDir);
+                return actionControlInterface.execute(ActionType.heading,oppositeDir);
             }
             else{
-                scanAction.resetCount();
+                scanCounter=0;
                 droneInterface.setStartOppositeScanning(false);
                 return actionControlInterface.execute(ActionType.echo,droneInterface.getDirection());
             }
