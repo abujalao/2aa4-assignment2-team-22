@@ -16,7 +16,9 @@ public class Drone implements IDroneAction {
     private int batteryLevel;
     private final int[] DEFAULT_POSITION = new int[] {1,1};//The reference starting point will always be (1,1) make sure we return to this position after we are done
     private final Position dronePosition = new Position(DEFAULT_POSITION[0],DEFAULT_POSITION[1]); 
-    private final String initialHeading;
+    private String initialHeading;
+    private boolean delayTurn = false; //!!Need refactor (not much related to drone)
+    private boolean imstupid = false;
 
     public enum DroneState {
         find_island,
@@ -35,6 +37,8 @@ public class Drone implements IDroneAction {
     private final Maps map = new Maps(this, pois);
     private final ActionManager actionManager;
 
+    private boolean oppositeScan = false;
+
 
     public Drone(int batteryLevel,String direction) {
         this.actionManager = new ActionManager(getDroneInterface());
@@ -45,6 +49,25 @@ public class Drone implements IDroneAction {
         logger.info("Battery level is {}", batteryLevel);
         initialHeading = getDirection();
         
+    }
+
+    @Override
+    public boolean getStartOppositeScanning(){
+        return oppositeScan;
+    }
+    @Override
+    public void setStartOppositeScanning(boolean state){
+        this.oppositeScan = state;
+    }
+
+    @Override
+    public boolean getChangeScanDir(){
+        return this.imstupid;
+    }
+
+    @Override
+    public void setChangeScanDir(boolean value){
+        this.imstupid = value;
     }
 
     public int[] getDronePosition(){
@@ -59,6 +82,14 @@ public class Drone implements IDroneAction {
     @Override
     public void resetIslandFound(){
         this.islandFound = false;
+    }
+
+    @Override
+    public boolean hasDroneScanned(){
+        if(map.isInMap(dronePosition.getPos())){
+            return true;
+        }
+        return false;
     }
 
     @Override

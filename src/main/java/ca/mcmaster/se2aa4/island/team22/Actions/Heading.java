@@ -51,10 +51,14 @@ public class Heading extends Action {
         else{
             if (droneInterface.getDroneScan() == 0){
                 droneInterface.incrementScan();
+                if(droneInterface.getStartOppositeScanning()){
+                    return actionControlInterface.getAction(ActionType.fly).execute();
+                }
                 return actionControlInterface.getAction(ActionType.heading).execute(oppositeDir); 
             }
             else{
                 droneInterface.resetScan();
+                droneInterface.setStartOppositeScanning(false);
                 return actionControlInterface.getAction(ActionType.echo).execute(droneInterface.getDirection()); 
             }
         }

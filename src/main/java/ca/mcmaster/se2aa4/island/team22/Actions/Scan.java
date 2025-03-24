@@ -37,13 +37,16 @@ public class Scan extends Action {
             return actionControlInterface.getAction(ActionType.stop).execute();
         }
         //if the biome is ocean, tturn...
-        Position targetPosition = new Position(5,26); // Replace with your desired position
-        if (droneInterface.getPos().equals(targetPosition)) {
-            logger.info("Drone has reached the target position: " + targetPosition);
-            return actionControlInterface.getAction(ActionType.stop).execute();
-        }
+        // Position targetPosition = new Position(50,30); // Replace with your desired position
+        // if (droneInterface.getPos().equals(targetPosition)) {
+        //     logger.info("Drone has reached the target position: " + targetPosition);
+        //     return actionControlInterface.getAction(ActionType.stop).execute();
+        // }
         if(droneInterface.isbiomeOcean()){
             logger.info("Biome is ocean, turning...");
+            if (droneInterface.getChangeScanDir()){
+                return actionControlInterface.getAction(ActionType.heading).execute(availableDirs[0]);
+            }
             return actionControlInterface.getAction(ActionType.heading).execute(availableDirs[1]);
         }
         return actionControlInterface.getAction(ActionType.fly).execute();

@@ -24,6 +24,10 @@ public class Maps implements IMap{
         }
         return false;
     }
+
+    public boolean isInMap(Position pos){
+        return map.containsKey(pos);
+    }
     
 
     public void addPOI(){

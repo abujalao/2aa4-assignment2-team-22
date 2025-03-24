@@ -24,4 +24,11 @@ public interface IDroneAction { //methods needed for fly action (!!bloated inter
     public Position getPos();
     public boolean isbiomeOcean();
     public void resetIslandFound();
+    public boolean hasDroneScanned();
+
+    //refactor these
+    public boolean getStartOppositeScanning();
+    public void setStartOppositeScanning(boolean state);
+    public void setChangeScanDir(boolean state);
+    public boolean getChangeScanDir();
 }

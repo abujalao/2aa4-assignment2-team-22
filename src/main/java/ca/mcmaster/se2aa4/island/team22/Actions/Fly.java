@@ -15,6 +15,7 @@ public class Fly extends Action {
     private final Logger logger = LogManager.getLogger();
     private IStorage storageInterface;
     private IActionManage actionControlInterface;
+
     public Fly(IDroneAction droneInterface) {
         super(droneInterface);
         this.storageInterface = droneInterface.getStorageInterface();
@@ -45,12 +46,25 @@ public class Fly extends Action {
         storageInterface.decrementRange();
 
         if(droneInterface.getIslandFound()){
-            logger.info("range is: " + storageInterface.getRange());
+            String oppositeDir = "";
+            if(droneInterface.getStartOppositeScanning() && !oppositeDir.equals("")){
+                return actionControlInterface.getAction(ActionType.heading).execute(oppositeDir);
+            }
             //i need getbiome from previousresponse
             if(storageInterface.getRange() > -1 && storageInterface.getResult().equals("GROUND")){
                 return actionControlInterface.getAction(ActionType.fly).execute();
             }
+            if(storageInterface.getRange() > -1 && !storageInterface.getResult().equals("GROUND")){
+                droneInterface.setStartOppositeScanning(true);
+                droneInterface.setChangeScanDir(true);
+                oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
+                return actionControlInterface.getAction(ActionType.heading).execute(availableDirs[0]);
+            }
             if (storageInterface.getResult().equals("GROUND")){
+                if(droneInterface.hasDroneScanned()){
+                    logger.info("Already scanned, skipping scan");
+                    return actionControlInterface.getAction(ActionType.fly).execute();   
+                }
                 return actionControlInterface.getAction(ActionType.scan).execute();
             }
         }
