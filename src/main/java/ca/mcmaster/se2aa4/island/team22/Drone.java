@@ -1,7 +1,6 @@
 package ca.mcmaster.se2aa4.island.team22;
 
 import java.io.StringReader;
-import java.util.HashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,8 +15,7 @@ public class Drone implements IDroneAction {
     private int batteryLevel;
     private final int[] DEFAULT_POSITION = new int[] {1,1};//The reference starting point will always be (1,1) make sure we return to this position after we are done
     private final Position dronePosition = new Position(DEFAULT_POSITION[0],DEFAULT_POSITION[1]); 
-    private String initialHeading;
-    private boolean delayTurn = false; //!!Need refactor (not much related to drone)
+    private final String initialHeading;
     private boolean imstupid = false;
 
     public enum DroneState {
@@ -25,13 +23,8 @@ public class Drone implements IDroneAction {
         return_base,
     }
 
-    private int scanCount = 0; //!!Need refactor (not much related to drone) drone state?
-    private String oppositeDir = ""; //not needed use methods
-    private int droneChecks = 0; //!!Need refactor (not much related to drone) drone state?
- 
-    private boolean islandFound = false; //!!Need refactor (not much related to drone) drone state?
-    private DroneState currentState = DroneState.find_island; //first thing to do is to find island
-    private final HashSet<String> requiredDirections = new HashSet<>(); //Directions we need to take to reach to the base. 
+    private boolean droneFoundLand = false; //!!Need refactor (not much related to drone) drone state?
+    private final DroneState currentState = DroneState.find_island; //first thing to do is to find island
     private final ResponseStorage store = new ResponseStorage();
     private final PointsOfInterest pois = new PointsOfInterest(store);
     private final Maps map = new Maps(this, pois);
@@ -44,10 +37,10 @@ public class Drone implements IDroneAction {
         this.actionManager = new ActionManager(getDroneInterface());
         this.batteryLevel = batteryLevel;
         actionManager.setDirectionParameter(direction); //save inital direction in actionManager.pastParameters to track drone direction
-        actionManager.setAction(actionManager.getAction(ActionType.echo)); //default action is echo
+        actionManager.setAction(ActionType.echo); //default action is echo
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
-        initialHeading = getDirection();
+        this.initialHeading = direction;
         
     }
 
@@ -70,46 +63,20 @@ public class Drone implements IDroneAction {
         this.imstupid = value;
     }
 
+    @Override
     public int[] getDronePosition(){
         return this.dronePosition.getPosition();
     }
 
-    public Position getPos(){
-        return this.dronePosition;
-    }
-
-
     @Override
-    public void resetIslandFound(){
-        this.islandFound = false;
+    public void resetDroneLand(){
+        setFoundLand(false);
     }
-
-    @Override
-    public boolean hasDroneScanned(){
-        if(map.isInMap(dronePosition.getPos())){
-            return true;
-        }
-        return false;
-    }
-
+    
     @Override
     public void moveDrone(int x, int y) { //change drone position by taking x and y values and adding to the current drone position. (ex. if drone position is (30,41) and given moveDrone (5,6) new location is (35,47)
         int[] currentPosition = this.dronePosition.getPosition();
         this.dronePosition.setPosition(currentPosition[0]+x,currentPosition[1]+y);
-    }
-
-    public void incrementDroneChecks(){
-        this.droneChecks++;
-    }
-    public void incrementScan(){
-        this.scanCount++;
-    }
-
-    public void resetDroneChecks(){
-        this.droneChecks = 0;
-    }
-    public void resetScan(){
-        this.scanCount = 0;
     }
 
     private void setBattery(int value) {
@@ -119,8 +86,8 @@ public class Drone implements IDroneAction {
     }
     
     @Override
-    public void setIslandFound(boolean value){
-        this.islandFound = value;
+    public void setFoundLand(boolean value){
+        this.droneFoundLand = value;
     }
 
     @Override
@@ -140,17 +107,8 @@ public class Drone implements IDroneAction {
     }
 
     @Override
-    public int getDroneChecks(){
-        return this.droneChecks;
-    }
-
-    public int getDroneScan(){
-        return this.scanCount;
-    }
-
-    @Override
-    public boolean getIslandFound(){
-        return islandFound;
+    public boolean getFoundLand(){
+        return droneFoundLand;
     }
 
     @Override
@@ -197,6 +155,7 @@ public class Drone implements IDroneAction {
         return map;
     }
 
+    @Override
     public String[] availableDirections(){
         return DirectionUtil.Available_Directions.get(getDirection());
     }
@@ -207,10 +166,10 @@ public class Drone implements IDroneAction {
         logger.info("Available Directions: {}", String.join(", ", availableDirections()));
 
         //base case: if battery level is low, just return to base to avoid losing the drone
-        if(batteryLevel < 30){
-            return actionManager.getAction(ActionType.stop).execute();
+        if(batteryLevel < 30){ 
+            return actionManager.execute(ActionType.stop);
         }
-        return actionManager.getAction().checkMove();
+        return actionManager.checkMove();
     }
 
     public void updateDrone(String s) {
@@ -221,6 +180,6 @@ public class Drone implements IDroneAction {
         decrementBattery(cost);
         JSONObject extraInfo = response.getJSONObject("extras");
         logger.info("Additional information received: {}", extraInfo);
-        store.storeResults(actionManager.getAction().getActionString(), response); 
+        store.storeResults(actionManager.getCurrentAction(), response); 
     }
 }

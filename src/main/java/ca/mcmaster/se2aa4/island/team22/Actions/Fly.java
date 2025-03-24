@@ -9,7 +9,6 @@ import ca.mcmaster.se2aa4.island.team22.Drone;
 import ca.mcmaster.se2aa4.island.team22.IActionManage;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
 import ca.mcmaster.se2aa4.island.team22.IStorage;
-import ca.mcmaster.se2aa4.island.team22.Position;
 
 public class Fly extends Action {
     private final Logger logger = LogManager.getLogger();
@@ -17,7 +16,7 @@ public class Fly extends Action {
     private IActionManage actionControlInterface;
 
     public Fly(IDroneAction droneInterface) {
-        super(droneInterface);
+        super(droneInterface,ActionType.fly);
         this.storageInterface = droneInterface.getStorageInterface();
         this.actionControlInterface = droneInterface.getActionManagerInterface();
         
@@ -45,41 +44,42 @@ public class Fly extends Action {
         String[] availableDirs = getDroneInterface().availableDirections();
         storageInterface.decrementRange();
 
-        if(droneInterface.getIslandFound()){
+        if(droneInterface.getFoundLand()){
             String oppositeDir = "";
             if(droneInterface.getStartOppositeScanning() && !oppositeDir.equals("")){
-                return actionControlInterface.getAction(ActionType.heading).execute(oppositeDir);
+                return actionControlInterface.execute(ActionType.heading,oppositeDir);
             }
             //i need getbiome from previousresponse
             if(storageInterface.getRange() > -1 && storageInterface.getResult().equals("GROUND")){
-                return actionControlInterface.getAction(ActionType.fly).execute();
+                return actionControlInterface.execute(ActionType.fly);
             }
             if(storageInterface.getRange() > -1 && !storageInterface.getResult().equals("GROUND")){
                 droneInterface.setStartOppositeScanning(true);
                 droneInterface.setChangeScanDir(true);
                 oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
-                return actionControlInterface.getAction(ActionType.heading).execute(availableDirs[0]);
+                return actionControlInterface.execute(ActionType.heading,availableDirs[0]);
             }
             if (storageInterface.getResult().equals("GROUND")){
-                if(droneInterface.hasDroneScanned()){
+                if(droneInterface.getMapInterface().isInMap(droneInterface.getDronePosition())){
                     logger.info("Already scanned, skipping scan");
-                    return actionControlInterface.getAction(ActionType.fly).execute();   
+                    return actionControlInterface.execute(ActionType.fly);
                 }
-                return actionControlInterface.getAction(ActionType.scan).execute();
+                return actionControlInterface.execute(ActionType.scan);
             }
         }
         else{
+            Echo echoAction = (Echo) actionControlInterface.getCountInterface(ActionType.echo);
             if (getDroneInterface().getCurrentState() == Drone.DroneState.find_island) {
                     // When range is less than 30, echo in one direction at a time
                     if (!storageInterface.getResult().equals("GROUND")) {
                         // Get the directions available for the current position
-                        if (droneInterface.getDroneChecks() == 0){
-                            droneInterface.incrementDroneChecks();
-                            return actionControlInterface.getAction(ActionType.echo).execute(availableDirs[0]);
+                        if (echoAction.getCount() == 0){ // same comeon availableDirs[getCount()]
+                            echoAction.incrementCount();
+                            return actionControlInterface.execute(ActionType.echo,availableDirs[0]);
                         }
                         else{
-                            droneInterface.resetDroneChecks();
-                            return actionControlInterface.getAction(ActionType.echo).execute(availableDirs[1]);
+                            echoAction.resetCount();
+                            return actionControlInterface.execute(ActionType.echo,availableDirs[1]);
                         }
 
                     } else {
@@ -90,9 +90,8 @@ public class Fly extends Action {
                             return this.execute();
                         }
                         else if (storageInterface.getRange() < 0){
-                            droneInterface.setIslandFound(true);
-                            
-                            return actionControlInterface.getAction(ActionType.scan).execute();
+                            droneInterface.setFoundLand(true);
+                            return actionControlInterface.execute(ActionType.scan);
                         }
                     } 
             }

@@ -5,13 +5,13 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 
 import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.Actions.Action;
 import ca.mcmaster.se2aa4.island.team22.Actions.Echo;
 import ca.mcmaster.se2aa4.island.team22.Actions.Fly;
 import ca.mcmaster.se2aa4.island.team22.Actions.Heading;
+import ca.mcmaster.se2aa4.island.team22.Actions.IActionCount;
 import ca.mcmaster.se2aa4.island.team22.Actions.Scan;
 import ca.mcmaster.se2aa4.island.team22.Actions.Stop;
 
@@ -36,10 +36,9 @@ public class ActionManager implements IActionManage{
     }
 
     @Override
-    public void setAction(Action action) {
-        this.action = action;
+    public void setAction(ActionType action) {
+        this.action = getAction(action);
     }
-
     public String executeCurrentAction() {
         return action.execute();
     }
@@ -47,24 +46,17 @@ public class ActionManager implements IActionManage{
         return action.execute(dir);
     }
 
-    @Override
-    public String createAction(ActionType action, Map<String, Object> parameters) {
-        JSONObject decision = new JSONObject(Map.of(
-             "action", action
-        ));
-
+    public void processAction(ActionType action, Map<String, Object> parameters) {
         if (parameters != null && !parameters.isEmpty()) {
             pastParameters.put(action,parameters);
-            decision.put("parameters", parameters);
         }
-        
-        setAction(actions.get(action));
-        return decision.toString();
     }
 
     @Override
     public void putPastParameter(ActionType action, Map<String, Object> parameters) {
-        pastParameters.put(action,parameters);
+         if (parameters != null && !parameters.isEmpty()) {
+            pastParameters.put(action,parameters);
+        }
     }
 
     public void setDirectionParameter(String direction){ //When we initialize drone we need to use this method to save the direction in pastParameters
@@ -80,20 +72,38 @@ public class ActionManager implements IActionManage{
         return "";
     }
 
-    @Override
-    public Action getAction(ActionType actionName){ //get action using action enum
+    private Action getAction(ActionType actionName){ //get action using action enum
         return actions.get(actionName);
     }
 
-    @Override
-    public Action getAction(){
-        return action;
+    public String getCurrentAction(){ //get current action in String format
+        return action.getActionString();
     }
 
-
+    //action controls
+    public String checkMove(){ //checkMove for current assigned action
+        return action.checkMove();
+    }
+    @Override
+    public String execute(ActionType action, Object... parameters) {
+        //processAction(ActionType action, Map.of(parameters));
+        String executeResult = getAction(action).execute(parameters);
+        setAction(action);
+        return executeResult;
+    }
     @Override
     public IActionManage getActionInterface(){
         return this;
+    }
+    
+    @Override
+    public IActionCount getCountInterface(ActionType action) {
+        Action actionInstance = getAction(action);
+        if (actionInstance instanceof IActionCount countInterface) {
+            return countInterface;
+        } else {
+            throw new IllegalArgumentException("The action " + action + " does not implement IActionCount.");
+        }
     }
 
     private Map getParametersMap(ActionType action) {

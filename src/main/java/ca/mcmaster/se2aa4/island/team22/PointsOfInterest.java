@@ -9,17 +9,12 @@ import org.json.JSONObject;
 public class PointsOfInterest implements IPoi{
     //reference for the storage class
     private final IStorage store;
-    private List<String> creeks;
-    private List<String> biomes;
-    private List<String> sites;
+    private final List<String> creeks= new ArrayList<>();
+    private final List<String> biomes= new ArrayList<>();
+    private final List<String> sites= new ArrayList<>();
 
     public PointsOfInterest(IStorage storage) {
-        // Set the storage
         this.store = storage;
-        // Initialize lists
-        this.creeks = new ArrayList<>();
-        this.biomes = new ArrayList<>();
-        this.sites = new ArrayList<>();
     }
 
     // Method to copy data from JSONArray to List
@@ -37,6 +32,7 @@ public class PointsOfInterest implements IPoi{
         return creeks;
     }
     // Store the scan data into lists
+    @Override
     public void storeScan() {
         JSONObject response = store.getPrevResponse();
         JSONObject extraInfo = response.getJSONObject("extras");

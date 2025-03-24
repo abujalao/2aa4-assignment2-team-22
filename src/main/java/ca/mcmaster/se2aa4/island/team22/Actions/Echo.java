@@ -12,14 +12,30 @@ import ca.mcmaster.se2aa4.island.team22.IActionManage;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
 import ca.mcmaster.se2aa4.island.team22.IStorage;
 
-public class Echo extends Action {
+public class Echo extends Action implements IActionCount {
     private final Logger logger = LogManager.getLogger();
     private IActionManage actionControlInterface;
     private IStorage storageInterface;
+    private int echoCount = 0;
     public Echo(IDroneAction droneInterface) {
-        super(droneInterface);
+        super(droneInterface,ActionType.echo);
         this.storageInterface = droneInterface.getStorageInterface();
     }
+    
+    @Override
+    public int getCount() {
+        return echoCount;
+    }   
+
+    @Override
+    public void incrementCount() {
+        echoCount++;
+    }  
+
+    @Override
+    public void resetCount() {
+        echoCount = 0;
+    }  
 
     public void checkNull() {
         if (actionControlInterface==null||storageInterface==null) {
@@ -43,9 +59,9 @@ public class Echo extends Action {
         checkNull();
         String[] availableDirs = getDroneInterface().availableDirections();
 
-        if(droneInterface.getIslandFound()){
+        if(droneInterface.getFoundLand()){
             //i need getbiome from previousresponse
-            return actionControlInterface.getAction(ActionType.fly).execute();
+            return actionControlInterface.execute(ActionType.fly);
         }
 
         if (getDroneInterface().getCurrentState() == Drone.DroneState.find_island) {
@@ -53,40 +69,35 @@ public class Echo extends Action {
                 logger.info("FOUND GROUND");
                 if(getDroneInterface().getDirection().equals(actionControlInterface.getPastParameter(ActionType.echo, "direction"))){
                     storageInterface.decrementRange();
-                    return actionControlInterface.getAction(ActionType.fly).execute();
+                    return actionControlInterface.execute(ActionType.fly);
                 }
                 else{
                     storageInterface.decrementRange();
                     String oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
                     logger.info("dir is:" + droneInterface.getDirection() + "Opposite is: " + oppositeDir);
-                    return actionControlInterface.getAction(ActionType.heading).execute(actionControlInterface.getPastParameter(ActionType.echo, "direction"));
+                    return actionControlInterface.execute(ActionType.heading,actionControlInterface.getPastParameter(ActionType.echo, "direction"));
                 }
             }
             //if its looking at ground then fly towards it...
             else{
                 //fly until you reach middle of map...
                 logger.info("Im FLYINGGGGG");
-                if (droneInterface.getDroneChecks() == 0){
-                    droneInterface.incrementDroneChecks();
-                    return actionControlInterface.getAction(ActionType.echo).execute(availableDirs[0]);
-                }
-                else if(droneInterface.getDroneChecks() == 1){
-                    droneInterface.incrementDroneChecks();
-                    return actionControlInterface.getAction(ActionType.echo).execute(availableDirs[1]);
-                }
-                else{
-                    droneInterface.resetDroneChecks();
-                    if(!droneInterface.getIslandFound()){
-                        return actionControlInterface.getAction(ActionType.fly).execute();
-
+                
+                if (getCount() > 1){
+                    resetCount();
+                    if(!droneInterface.getFoundLand()){
+                        return actionControlInterface.execute(ActionType.fly);
                     }
                     else{
                         String oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
-                        return actionControlInterface.getAction(ActionType.heading).execute(availableDirs[1]);
+                        return actionControlInterface.execute(ActionType.heading, availableDirs[1]);
                     }
                 }
+                int count = getCount();
+                incrementCount();
+                return actionControlInterface.execute(ActionType.echo, availableDirs[count]);
             }
         }
-        return actionControlInterface.getAction(ActionType.stop).execute(); //wasnt in the original code
+        return actionControlInterface.execute(ActionType.stop);
     }
 }

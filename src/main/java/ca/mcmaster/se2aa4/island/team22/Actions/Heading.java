@@ -16,7 +16,7 @@ public class Heading extends Action {
     private String oppositeDir;
 
     public Heading(IDroneAction droneInterface) {
-        super(droneInterface);
+        super(droneInterface,ActionType.heading);
         this.actionControlInterface = droneInterface.getActionManagerInterface();
     }
     
@@ -44,22 +44,23 @@ public class Heading extends Action {
 
     @Override
     public String checkMove() {
+        Scan scanAction = (Scan) actionControlInterface.getCountInterface(ActionType.scan);
         checkNull();
-        if (!droneInterface.getIslandFound()){
-             return actionControlInterface.getAction(ActionType.fly).execute();
+        if (!droneInterface.getFoundLand()){
+            return actionControlInterface.execute(ActionType.fly);
         }
         else{
-            if (droneInterface.getDroneScan() == 0){
-                droneInterface.incrementScan();
+            if (scanAction.getCount() == 0){
+                scanAction.incrementCount();
                 if(droneInterface.getStartOppositeScanning()){
-                    return actionControlInterface.getAction(ActionType.fly).execute();
+                    return actionControlInterface.execute(ActionType.fly);
                 }
-                return actionControlInterface.getAction(ActionType.heading).execute(oppositeDir); 
+                return actionControlInterface.execute(ActionType.heading,oppositeDir);
             }
             else{
-                droneInterface.resetScan();
+                scanAction.resetCount();
                 droneInterface.setStartOppositeScanning(false);
-                return actionControlInterface.getAction(ActionType.echo).execute(droneInterface.getDirection()); 
+                return actionControlInterface.execute(ActionType.echo,droneInterface.getDirection());
             }
         }
     }

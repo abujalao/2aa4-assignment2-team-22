@@ -23,10 +23,6 @@ public class Position {
         return new int[] {x, y};
     }
 
-    public Position getPos(){
-        return this;
-    }
-
     public int getX(){ 
         return x;
     }
@@ -37,6 +33,19 @@ public class Position {
 
     public String getStringPosition(){
         return "("+String.valueOf(x) +","+ String.valueOf(y)+")";
+    }
+
+    public Position subtract(Position secondPosition) {
+        return new Position(this.x - secondPosition.x, this.y - secondPosition.y);
+    }
+
+    public double magnitude() {
+        return Math.sqrt((x*x) +(y*y));
+    }
+
+    public double getDistanceBetween(Position secondPosition) {
+        Position distance = this.subtract(secondPosition);
+        return distance.magnitude();
     }
 
     @Override

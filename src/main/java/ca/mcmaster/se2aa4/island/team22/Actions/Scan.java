@@ -6,17 +6,29 @@ import org.apache.logging.log4j.Logger;
 import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.IActionManage;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
-import ca.mcmaster.se2aa4.island.team22.Position;
 
-public class Scan extends Action {
+public class Scan extends Action implements IActionCount {
     private IActionManage actionControlInterface;
-
+    private int scanCount = 0; //monitor scans
     private final Logger logger = LogManager.getLogger();
 
     public Scan(IDroneAction droneInterface) {
-        super(droneInterface);     
+        super(droneInterface,ActionType.scan);     
         this.actionControlInterface = droneInterface.getActionManagerInterface(); 
     }
+
+    @Override
+    public int getCount() {
+        return scanCount;
+    }   
+    @Override
+    public void incrementCount() {
+        scanCount++;
+    }  
+    @Override
+    public void resetCount() {
+        scanCount = 0;
+    }  
 
     @Override
     public String execute(Object... args) {
@@ -34,7 +46,7 @@ public class Scan extends Action {
         droneInterface.getMapInterface().addPOI();
         if (droneInterface.canSaveThem()){
             logger.info("Have found save places.");
-            return actionControlInterface.getAction(ActionType.stop).execute();
+            return actionControlInterface.execute(ActionType.stop); 
         }
         //if the biome is ocean, tturn...
         // Position targetPosition = new Position(50,30); // Replace with your desired position
@@ -45,11 +57,11 @@ public class Scan extends Action {
         if(droneInterface.isbiomeOcean()){
             logger.info("Biome is ocean, turning...");
             if (droneInterface.getChangeScanDir()){
-                return actionControlInterface.getAction(ActionType.heading).execute(availableDirs[0]);
+                return actionControlInterface.execute(ActionType.heading,availableDirs[0]);
             }
-            return actionControlInterface.getAction(ActionType.heading).execute(availableDirs[1]);
+            return actionControlInterface.execute(ActionType.heading,availableDirs[1]);
         }
-        return actionControlInterface.getAction(ActionType.fly).execute();
+        return actionControlInterface.execute(ActionType.fly);
         //currentState = DroneState.return_base;//testing return_base state
         // if (droneInterface.getDroneScan() == 0){
         //     droneInterface.incrementScan();
