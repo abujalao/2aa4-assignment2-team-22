@@ -11,18 +11,17 @@ import ca.mcmaster.se2aa4.island.team22.Actions.Action;
 import ca.mcmaster.se2aa4.island.team22.Actions.Echo;
 import ca.mcmaster.se2aa4.island.team22.Actions.Fly;
 import ca.mcmaster.se2aa4.island.team22.Actions.Heading;
-import ca.mcmaster.se2aa4.island.team22.Actions.IActionCount;
 import ca.mcmaster.se2aa4.island.team22.Actions.Scan;
 import ca.mcmaster.se2aa4.island.team22.Actions.Stop;
 
-public class ActionManager implements IActionManage{
+public class ActionManager implements IActionManage {
 
     public enum ActionType {
         echo, fly, scan, stop, heading;
     }
     
     private final Logger logger = LogManager.getLogger();
-    final Map<ActionType, Action> actions = new HashMap<>(); //available actions to perform ((PRIVATE!!))
+    private final Map<ActionType, Action> actions = new HashMap<>();
     private Action action;
     private final Map<ActionType, Map> pastParameters = new HashMap<>(); //save last parameter given in createAction() call
 
@@ -72,7 +71,7 @@ public class ActionManager implements IActionManage{
         return "";
     }
 
-    private Action getAction(ActionType actionName){  //danger too (u can access and modify Action)
+    private Action getAction(ActionType actionName){ 
         return actions.get(actionName);
     }
 
@@ -95,16 +94,6 @@ public class ActionManager implements IActionManage{
     @Override
     public IActionManage getActionInterface(){
         return this;
-    }
-    
-    @Override
-    public IActionCount getCountInterface(ActionType action) {
-        Action actionInstance = getAction(action);
-        if (actionInstance instanceof IActionCount countInterface) {
-            return countInterface;
-        } else {
-            throw new IllegalArgumentException("The action " + action + " does not implement IActionCount.");
-        }
     }
 
     private Map getParametersMap(ActionType action) {

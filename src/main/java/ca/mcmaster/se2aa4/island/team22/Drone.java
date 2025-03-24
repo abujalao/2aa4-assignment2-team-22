@@ -16,18 +16,12 @@ public class Drone implements IDroneAction {
     private final int[] DEFAULT_POSITION = new int[] {1,1};//The reference starting point will always be (1,1) make sure we return to this position after we are done
     private final Position dronePosition = new Position(DEFAULT_POSITION[0],DEFAULT_POSITION[1]); 
     private final String initialHeading;
-    private boolean imstupid = false;
 
-    
-
-    private boolean droneFoundLand = false; //!!Need refactor (not much related to drone) drone state?
     private final ResponseStorage store = new ResponseStorage();
     private final PointsOfInterest pois = new PointsOfInterest(store);
     private final Maps map = new Maps(this, pois);
     private final ActionManager actionManager;
     private final StateManager stateManager;
-
-    private boolean oppositeScan = false;
 
 
     public Drone(int batteryLevel,String direction) {
@@ -46,30 +40,9 @@ public class Drone implements IDroneAction {
         
     }
 
-
-
-    @Override
-    public boolean getStartOppositeScanning(){
-        return oppositeScan;
-    }
-    @Override
-    public void setStartOppositeScanning(boolean state){
-        this.oppositeScan = state;
-    }
-
     @Override
     public void setDroneState(DroneState state){
         stateManager.setState(state);
-    }
-
-    @Override
-    public boolean getChangeScanDir(){
-        return this.imstupid;
-    }
-
-    @Override
-    public void setChangeScanDir(boolean value){
-        this.imstupid = value;
     }
 
     @Override

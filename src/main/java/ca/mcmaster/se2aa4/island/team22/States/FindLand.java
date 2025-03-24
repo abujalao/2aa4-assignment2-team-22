@@ -42,9 +42,6 @@ public class FindLand extends State {
             if (this.count > 1){
                 count=0;
                 return actionControlInterface.execute(ActionType.fly);
-                // else
-                //     return actionControlInterface.execute(ActionType.heading, availableDirs[1]);
-                // }
             }
             int oldCount = count;
             count++;
@@ -56,7 +53,6 @@ public class FindLand extends State {
     protected String performCheck(Fly action) {
         String[] availableDirs = droneInterface.availableDirections();
         storageInterface.decrementRange();
-        Echo echoAction = (Echo) actionControlInterface.getCountInterface(ActionType.echo);
         if (!storageInterface.getResult().equals("GROUND")) {
             // Get the directions available for the current position
             if (count == 0){ 

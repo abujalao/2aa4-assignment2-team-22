@@ -14,10 +14,10 @@ import ca.mcmaster.se2aa4.island.team22.IDroneAction;
 import ca.mcmaster.se2aa4.island.team22.IStorage;
 
 public abstract class State implements IDroneState {
-    protected  final IDroneAction droneInterface;
-    protected IStorage storageInterface;
-    protected IActionManage actionControlInterface;
-    protected final Logger logger = LogManager.getLogger();
+    public  final IDroneAction droneInterface;
+    public IStorage storageInterface;
+    public IActionManage actionControlInterface;
+    public final Logger logger = LogManager.getLogger();
 
     public State(IDroneAction droneInterface,IStorage storageInterface,IActionManage actionControlInterface) {
         this.droneInterface = droneInterface;
@@ -25,11 +25,11 @@ public abstract class State implements IDroneState {
         this.actionControlInterface = actionControlInterface;
     }
 
-    protected IActionManage getActionControlInterface() {
+    public IActionManage getActionControlInterface() {
         return actionControlInterface;
     }
 
-    protected IStorage getStorageInterface() {
+    public IStorage getStorageInterface() {
         return storageInterface;
     }
 
@@ -43,23 +43,34 @@ public abstract class State implements IDroneState {
     @Override
     public final String perform(Action action) { // Template method
         checkNull();
-        return dispatchPerformCheck(action);
+        return action.accept(this);
     }
 
-    private String dispatchPerformCheck(Action action) {
-        if (action instanceof Echo) {
-            return performCheck((Echo) action);
-        } else if (action instanceof Fly) {
-            return performCheck((Fly) action);
-        } else if (action instanceof Heading) {
-            return performCheck((Heading) action);
-        } else if (action instanceof Scan) {
-            return performCheck((Scan) action);
-        } else if (action instanceof Stop) {
-            return performCheck((Stop) action);
-        }
-        throw new UnsupportedOperationException("Action type not supported: " + action.getClass().getSimpleName());
+   @Override
+    public String visit(Echo echo) { //Visitor pattern
+        return performCheck(echo);
     }
+
+    @Override
+    public String visit(Fly fly) {
+        return performCheck(fly);
+    }
+
+    @Override
+    public String visit(Heading heading) {
+        return performCheck(heading);
+    }
+
+    @Override
+    public String visit(Scan scan) {
+        return performCheck(scan);
+    }
+
+    @Override
+    public String visit(Stop stop) {
+        return performCheck(stop);
+    }
+
     protected abstract String performCheck(Echo action);
     protected abstract String performCheck(Fly action);
     protected abstract String performCheck(Scan action);

@@ -17,6 +17,6 @@ public class Stop extends Action {
 
     @Override
     public String accept(IDroneState state){
-        return state.perform(this);
+        return state.visit(this);
     }
 }

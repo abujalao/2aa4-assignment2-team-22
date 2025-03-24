@@ -13,7 +13,6 @@ import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 public class Heading extends Action {
     private final Logger logger = LogManager.getLogger();
     private IActionManage actionControlInterface;
-    private String oppositeDir;
 
     public Heading(IDroneAction droneInterface) {
         super(droneInterface,ActionType.heading);
@@ -28,7 +27,7 @@ public class Heading extends Action {
 
     @Override
     public String accept(IDroneState state){
-        return state.perform(this);
+        return state.visit(this);
     }
 
     @Override
@@ -40,7 +39,6 @@ public class Heading extends Action {
             int[] stepAmountNew = DirectionUtil.Fly_Increment.get(direction); //amount of steps in new direction
             logger.info("Change direction from {} to {}. Move step is ({},{})",currentDir,direction,stepAmountCurrent[0]+stepAmountNew[0],stepAmountCurrent[1]+stepAmountNew[1]);
             getDroneInterface().moveDrone(stepAmountCurrent[0]+stepAmountNew[0],stepAmountCurrent[1]+stepAmountNew[1]);//When turning around the drone will take a step in the current direction + the direction where it wants to go. If im north and its going east it will take one step north + one step east
-            oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
             return createAction(ActionType.heading,Map.of("direction", direction));
         } else {
             throw new IllegalArgumentException("Heading action requires a direction argument.");

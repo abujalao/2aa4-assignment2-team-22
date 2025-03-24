@@ -22,6 +22,7 @@ public class StateManager {
         states.put(DroneState.interlaceScan,new InterlaceScan(droneInterface));
     }
 
+
     public void setState(DroneState state) {
         this.currentState = states.get(state);
     }

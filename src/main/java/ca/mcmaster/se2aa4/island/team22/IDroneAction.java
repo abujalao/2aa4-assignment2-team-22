@@ -22,9 +22,5 @@ public interface IDroneAction { //methods needed for fly action (!!bloated inter
     
     public int[] getDronePosition();
     //refactor below
-    public boolean getStartOppositeScanning();
-    public boolean getChangeScanDir();
-    public void setStartOppositeScanning(boolean state);
-    public void setChangeScanDir(boolean state);
     public void setDroneState(DroneState state);
 }
