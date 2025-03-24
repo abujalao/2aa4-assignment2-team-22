@@ -8,12 +8,12 @@ import org.json.JSONObject;
 
 public class PointsOfInterest implements IPoi{
     //reference for the storage class
-    private final ResponseStorage store;
+    private final IStorage store;
     private List<String> creeks;
     private List<String> biomes;
     private List<String> sites;
 
-    public PointsOfInterest(ResponseStorage storage) {
+    public PointsOfInterest(IStorage storage) {
         // Set the storage
         this.store = storage;
         // Initialize lists
@@ -28,10 +28,11 @@ public class PointsOfInterest implements IPoi{
             list.add(thisArray.getString(i));
         }
     }
-
+    @Override
     public List<String> getSites(){
         return sites;
     }
+    @Override
     public List<String> getCreeks(){
         return creeks;
     }
@@ -47,6 +48,11 @@ public class PointsOfInterest implements IPoi{
         copyArrayToList(extraInfo.getJSONArray("biomes"), biomes);
         copyArrayToList(extraInfo.getJSONArray("sites"), sites);
         copyArrayToList(extraInfo.getJSONArray("creeks"), creeks);
+    }
+
+    @Override
+    public PointsOfInterest getPoi() {
+        return this;
     }
 
 }

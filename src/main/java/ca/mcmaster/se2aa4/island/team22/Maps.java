@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Maps implements IMap{
-    Drone drone;
-    PointsOfInterest poi;
+    IDroneAction drone;
+    IPoi poi;
     private Map<Position, PointsOfInterest> map;
     private boolean creekFound;
     private boolean siteFound;
 
-    public Maps(Drone drone, PointsOfInterest poi){
+    public Maps(IDroneAction drone, IPoi poi){
         this.drone = drone;
         this.poi = poi;
 
@@ -37,6 +37,6 @@ public class Maps implements IMap{
         }
         int[] pos = drone.getDronePosition();
         Position position = new Position(pos[0], pos[1]);
-        map.put(position, poi);
+        map.put(position, poi.getPoi());
     }
 }
