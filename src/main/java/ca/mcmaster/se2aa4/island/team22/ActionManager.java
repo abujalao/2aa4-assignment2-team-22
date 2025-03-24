@@ -22,7 +22,7 @@ public class ActionManager implements IActionManage{
     }
     
     private final Logger logger = LogManager.getLogger();
-    final Map<ActionType, Action> actions = new HashMap<>(); //available actions to perform
+    final Map<ActionType, Action> actions = new HashMap<>(); //available actions to perform ((PRIVATE!!))
     private Action action;
     private final Map<ActionType, Map> pastParameters = new HashMap<>(); //save last parameter given in createAction() call
 
@@ -72,18 +72,19 @@ public class ActionManager implements IActionManage{
         return "";
     }
 
-    private Action getAction(ActionType actionName){ //get action using action enum
+    private Action getAction(ActionType actionName){  //danger too (u can access and modify Action)
         return actions.get(actionName);
+    }
+
+    @Override
+    public Action getAction(){ //get action using action enum (MAKE PRIVATE LATER + ALL ACTIONS IN ACTIONMANAGER SHOULDNT BE ACCESSIBLE SO CHECK THAT SO WE DO INFO HIDING)
+        return action; //DANGER
     }
 
     public String getCurrentAction(){ //get current action in String format
         return action.getActionString();
     }
 
-    //action controls
-    public String checkMove(){ //checkMove for current assigned action
-        return action.checkMove();
-    }
     @Override
     public String execute(ActionType action, Object... parameters) {
         //processAction(ActionType action, Map.of(parameters));

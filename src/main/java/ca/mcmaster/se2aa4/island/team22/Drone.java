@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
-import ca.mcmaster.se2aa4.island.team22.Drone.DroneState;
+import ca.mcmaster.se2aa4.island.team22.StateManager.DroneState;
 
 public class Drone implements IDroneAction {
     private final Logger logger = LogManager.getLogger();
@@ -18,31 +18,35 @@ public class Drone implements IDroneAction {
     private final String initialHeading;
     private boolean imstupid = false;
 
-    public enum DroneState {
-        find_island,
-        return_base,
-    }
+    
 
     private boolean droneFoundLand = false; //!!Need refactor (not much related to drone) drone state?
-    private final DroneState currentState = DroneState.find_island; //first thing to do is to find island
     private final ResponseStorage store = new ResponseStorage();
     private final PointsOfInterest pois = new PointsOfInterest(store);
     private final Maps map = new Maps(this, pois);
     private final ActionManager actionManager;
+    private final StateManager stateManager;
 
     private boolean oppositeScan = false;
 
 
     public Drone(int batteryLevel,String direction) {
         this.actionManager = new ActionManager(getDroneInterface());
+        this.stateManager = new StateManager(getDroneInterface());
         this.batteryLevel = batteryLevel;
         actionManager.setDirectionParameter(direction); //save inital direction in actionManager.pastParameters to track drone direction
+
         actionManager.setAction(ActionType.echo); //default action is echo
+        stateManager.setState(DroneState.findLand); //default state is find island
+
+
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
         this.initialHeading = direction;
         
     }
+
+
 
     @Override
     public boolean getStartOppositeScanning(){
@@ -51,6 +55,11 @@ public class Drone implements IDroneAction {
     @Override
     public void setStartOppositeScanning(boolean state){
         this.oppositeScan = state;
+    }
+
+    @Override
+    public void setDroneState(DroneState state){
+        stateManager.setState(state);
     }
 
     @Override
@@ -67,11 +76,6 @@ public class Drone implements IDroneAction {
     public int[] getDronePosition(){
         return this.dronePosition.getPosition();
     }
-
-    @Override
-    public void resetDroneLand(){
-        setFoundLand(false);
-    }
     
     @Override
     public void moveDrone(int x, int y) { //change drone position by taking x and y values and adding to the current drone position. (ex. if drone position is (30,41) and given moveDrone (5,6) new location is (35,47)
@@ -84,11 +88,7 @@ public class Drone implements IDroneAction {
         this.batteryLevel = value;
         logger.info("The battery of the drone is {}", getBattery());   
     }
-    
-    @Override
-    public void setFoundLand(boolean value){
-        this.droneFoundLand = value;
-    }
+
 
     @Override
     public boolean canSaveThem(){
@@ -104,16 +104,6 @@ public class Drone implements IDroneAction {
 
     public int getBattery() {
         return batteryLevel;
-    }
-
-    @Override
-    public boolean getFoundLand(){
-        return droneFoundLand;
-    }
-
-    @Override
-    public DroneState getCurrentState() {
-        return currentState;
     }
 
     @Override
@@ -169,7 +159,7 @@ public class Drone implements IDroneAction {
         if(batteryLevel < 30){ 
             return actionManager.execute(ActionType.stop);
         }
-        return actionManager.checkMove();
+        return stateManager.performMove();
     }
 
     public void updateDrone(String s) {
