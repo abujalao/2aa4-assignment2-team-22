@@ -29,12 +29,12 @@ public class Maps implements IMap{
     public void addPOI(){
         poi.storeScan();
 
-         if (!poi.getCreeks().isEmpty()){
-             creekFound = true;
-         }
-         if (!poi.getSites().isEmpty()){
-             siteFound = true;
-         }
+        if (!poi.getCreeks().isEmpty()){
+            creekFound = true;
+        }
+        if (!poi.getSites().isEmpty()){
+            siteFound = true;
+        }
         int[] pos = drone.getDronePosition();
         Position position = new Position(pos[0], pos[1]);
         map.put(position, poi);

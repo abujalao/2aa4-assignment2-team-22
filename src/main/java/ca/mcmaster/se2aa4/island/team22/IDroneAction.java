@@ -7,6 +7,7 @@ public interface IDroneAction { //methods needed for fly action (!!bloated inter
     public IStorage getStorageInterface();
     public IActionManage getActionManagerInterface();
     public String getDirection();
+    public String getInitialHeading();
     public String[] availableDirections();
     public int getDroneChecks();
     public void incrementDroneChecks();
@@ -20,4 +21,7 @@ public interface IDroneAction { //methods needed for fly action (!!bloated inter
     public void resetScan();
     public IPoi getPoiInterface();
     public IMap getMapInterface();
+    public Position getPos();
+    public boolean isbiomeOcean();
+    public void resetIslandFound();
 }

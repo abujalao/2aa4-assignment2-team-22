@@ -16,6 +16,7 @@ public class Drone implements IDroneAction {
     private int batteryLevel;
     private final int[] DEFAULT_POSITION = new int[] {1,1};//The reference starting point will always be (1,1) make sure we return to this position after we are done
     private final Position dronePosition = new Position(DEFAULT_POSITION[0],DEFAULT_POSITION[1]); 
+    private final String initialHeading;
 
     public enum DroneState {
         find_island,
@@ -42,11 +43,22 @@ public class Drone implements IDroneAction {
         actionManager.setAction(actionManager.getAction(ActionType.echo)); //default action is echo
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
+        initialHeading = getDirection();
         
     }
 
     public int[] getDronePosition(){
         return this.dronePosition.getPosition();
+    }
+
+    public Position getPos(){
+        return this.dronePosition;
+    }
+
+
+    @Override
+    public void resetIslandFound(){
+        this.islandFound = false;
     }
 
     @Override
@@ -110,8 +122,6 @@ public class Drone implements IDroneAction {
         return islandFound;
     }
 
-    
-
     @Override
     public DroneState getCurrentState() {
         return currentState;
@@ -120,6 +130,16 @@ public class Drone implements IDroneAction {
     @Override
     public String getDirection() {
         return actionManager.getPastParameter(ActionType.heading,"direction"); //Last saved heading action parameter is the drone current direction.
+    }
+
+    @Override
+    public String getInitialHeading(){
+        return initialHeading;
+    }
+
+    @Override
+    public boolean isbiomeOcean(){
+        return store.isOnOcean();
     }
 
     private IDroneAction getDroneInterface(){

@@ -42,6 +42,12 @@ public class Echo extends Action {
     public String checkMove() {
         checkNull();
         String[] availableDirs = getDroneInterface().availableDirections();
+
+        if(droneInterface.getIslandFound()){
+            //i need getbiome from previousresponse
+            return actionControlInterface.getAction(ActionType.fly).execute();
+        }
+
         if (getDroneInterface().getCurrentState() == Drone.DroneState.find_island) {
             if(storageInterface.getResult().equals("GROUND")){
                 logger.info("FOUND GROUND");

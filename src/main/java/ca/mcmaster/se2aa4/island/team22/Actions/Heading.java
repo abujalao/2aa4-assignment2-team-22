@@ -55,7 +55,7 @@ public class Heading extends Action {
             }
             else{
                 droneInterface.resetScan();
-                return actionControlInterface.getAction(ActionType.fly).execute(); 
+                return actionControlInterface.getAction(ActionType.echo).execute(droneInterface.getDirection()); 
             }
         }
     }
