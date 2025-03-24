@@ -8,7 +8,7 @@ import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
 
 public abstract class Action implements IActionExecute, IActionCheck {
-    public final IDroneAction droneInterface;
+    protected final IDroneAction droneInterface;
     //!!Want to add past parameter for each action
     public Action(IDroneAction droneInterface) {
         this.droneInterface = droneInterface;
