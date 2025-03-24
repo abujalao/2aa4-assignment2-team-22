@@ -6,8 +6,9 @@ import org.json.JSONObject;
 
 import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
+import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 
-public abstract class Action implements IActionExecute, IActionCheck {
+public abstract class Action implements IActionExecute {
     protected final IDroneAction droneInterface;
     private final ActionType actionType; 
     //!!Want to add past parameter for each action
@@ -45,5 +46,5 @@ public abstract class Action implements IActionExecute, IActionCheck {
     @Override
     public abstract String execute(Object... parameters);
     @Override
-    public abstract String checkMove();
+    public abstract String accept(IDroneState state);
 }

@@ -3,6 +3,7 @@ package ca.mcmaster.se2aa4.island.team22;
 import java.util.Map;
 
 import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
+import ca.mcmaster.se2aa4.island.team22.Actions.Action;
 import ca.mcmaster.se2aa4.island.team22.Actions.IActionCount;
 public interface IActionManage { //methods needed for fly action
     public IActionManage getActionInterface();
@@ -11,4 +12,5 @@ public interface IActionManage { //methods needed for fly action
     public void setAction(ActionType action);
     public String execute(ActionType action, Object... parameters);
     public IActionCount getCountInterface(ActionType action);
+    public Action getAction();
 }

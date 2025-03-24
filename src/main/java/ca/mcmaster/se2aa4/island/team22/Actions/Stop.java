@@ -2,7 +2,7 @@ package ca.mcmaster.se2aa4.island.team22.Actions;
 
 import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
-
+import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 public class Stop extends Action {
 
     public Stop(IDroneAction droneInterface) {
@@ -16,7 +16,7 @@ public class Stop extends Action {
     }
 
     @Override
-    public String checkMove() {
-        return this.execute();
+    public String accept(IDroneState state){
+        return state.perform(this);
     }
 }

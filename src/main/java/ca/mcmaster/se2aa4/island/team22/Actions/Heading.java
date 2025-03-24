@@ -9,7 +9,7 @@ import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.DirectionUtil;
 import ca.mcmaster.se2aa4.island.team22.IActionManage;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
-
+import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 public class Heading extends Action {
     private final Logger logger = LogManager.getLogger();
     private IActionManage actionControlInterface;
@@ -27,6 +27,11 @@ public class Heading extends Action {
     }
 
     @Override
+    public String accept(IDroneState state){
+        return state.perform(this);
+    }
+
+    @Override
     public String execute(Object... args) {
         checkNull();
         if (args.length > 0 && args[0] instanceof String direction) {
@@ -39,29 +44,6 @@ public class Heading extends Action {
             return createAction(ActionType.heading,Map.of("direction", direction));
         } else {
             throw new IllegalArgumentException("Heading action requires a direction argument.");
-        }
-    }
-
-    @Override
-    public String checkMove() {
-        Scan scanAction = (Scan) actionControlInterface.getCountInterface(ActionType.scan);
-        checkNull();
-        if (!droneInterface.getFoundLand()){
-            return actionControlInterface.execute(ActionType.fly);
-        }
-        else{
-            if (scanAction.getCount() == 0){
-                scanAction.incrementCount();
-                if(droneInterface.getStartOppositeScanning()){
-                    return actionControlInterface.execute(ActionType.fly);
-                }
-                return actionControlInterface.execute(ActionType.heading,oppositeDir);
-            }
-            else{
-                scanAction.resetCount();
-                droneInterface.setStartOppositeScanning(false);
-                return actionControlInterface.execute(ActionType.echo,droneInterface.getDirection());
-            }
         }
     }
 }
