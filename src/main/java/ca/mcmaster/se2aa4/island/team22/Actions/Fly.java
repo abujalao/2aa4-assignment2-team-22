@@ -1,14 +1,19 @@
 package ca.mcmaster.se2aa4.island.team22.Actions;
 
-import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
-import ca.mcmaster.se2aa4.island.team22.DirectionUtil;
-import ca.mcmaster.se2aa4.island.team22.IDroneAction;
-import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 
+import ca.mcmaster.se2aa4.island.team22.IDroneAction;
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
+import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
+import ca.mcmaster.se2aa4.island.team22.Util.DirectionUtil;
 public class Fly extends Action {
 
     public Fly(IDroneAction droneInterface) {
         super(droneInterface,ActionType.fly);
+    }
+
+    @Override
+    public Action createNew() {
+        return new Fly(droneInterface);
     }
 
     @Override

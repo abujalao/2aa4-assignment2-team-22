@@ -9,9 +9,9 @@ import ca.mcmaster.se2aa4.island.team22.Actions.Fly;
 import ca.mcmaster.se2aa4.island.team22.Actions.Heading;
 import ca.mcmaster.se2aa4.island.team22.Actions.Scan;
 import ca.mcmaster.se2aa4.island.team22.Actions.Stop;
-import ca.mcmaster.se2aa4.island.team22.IActionManage;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
 import ca.mcmaster.se2aa4.island.team22.IStorage;
+import ca.mcmaster.se2aa4.island.team22.Managers.IActionManage;
 
 public abstract class State implements IDroneState {
     public  final IDroneAction droneInterface;
@@ -41,7 +41,7 @@ public abstract class State implements IDroneState {
     }
 
     @Override
-    public final String perform(Action action) { // Template method
+    public final String perform(Action action) { // Template pattern
         checkNull();
         return action.accept(this);
     }

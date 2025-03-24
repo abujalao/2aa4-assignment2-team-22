@@ -2,13 +2,18 @@ package ca.mcmaster.se2aa4.island.team22.Actions;
 
 import java.util.Map;
 
-import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 
 public class Echo extends Action {
     public Echo(IDroneAction droneInterface) {
         super(droneInterface,ActionType.echo);
+    }
+
+    @Override
+    public Action createNew() {
+        return new Echo(droneInterface);
     }
    
     @Override

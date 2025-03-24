@@ -1,6 +1,5 @@
 package ca.mcmaster.se2aa4.island.team22;
 
-import java.util.*;
 import org.json.JSONObject;
 
 public class ResponseStorage implements IStorage {
@@ -21,6 +20,7 @@ public class ResponseStorage implements IStorage {
         cost = -1;
     }
 
+    @Override
     public boolean isOnOcean(){
         return onOcean;
     }
@@ -70,12 +70,8 @@ public class ResponseStorage implements IStorage {
         }
 
         if(decision.equals("scan")){
-            if (extraInfo.getJSONArray("biomes").length() == 1 && 
-                extraInfo.getJSONArray("biomes").getString(0).equals("OCEAN")){
-                onOcean = true;//clear only if its out of range because we are need to keep running echo until ground is found
-            }else{
-                onOcean = false;
-            }
+            onOcean = extraInfo.getJSONArray("biomes").length() == 1 && 
+            extraInfo.getJSONArray("biomes").getString(0).equals("OCEAN");//clear only if its out of range because we are need to keep running echo until ground is found
         }
 
 

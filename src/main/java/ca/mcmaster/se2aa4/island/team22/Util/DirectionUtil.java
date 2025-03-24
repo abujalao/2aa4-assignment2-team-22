@@ -1,7 +1,10 @@
-package ca.mcmaster.se2aa4.island.team22;
+package ca.mcmaster.se2aa4.island.team22.Util;
 import java.util.Map;
 
 public class DirectionUtil {
+    public enum ActionType {
+        echo, fly, scan, stop, heading;
+    }
     public static final Map<String, String> Opposite_Directions = Map.of(
         "N", "S",
         "S", "N",

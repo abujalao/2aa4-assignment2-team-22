@@ -5,11 +5,11 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
-import ca.mcmaster.se2aa4.island.team22.DirectionUtil;
-import ca.mcmaster.se2aa4.island.team22.IActionManage;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
+import ca.mcmaster.se2aa4.island.team22.Managers.IActionManage;
 import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
+import ca.mcmaster.se2aa4.island.team22.Util.DirectionUtil;
 public class Heading extends Action {
     private final Logger logger = LogManager.getLogger();
     private IActionManage actionControlInterface;
@@ -23,6 +23,11 @@ public class Heading extends Action {
         if (actionControlInterface==null) {
             this.actionControlInterface=droneInterface.getActionManagerInterface();
         }
+    }
+
+    @Override
+    public Action createNew() {
+        return new Heading(droneInterface);
     }
 
     @Override

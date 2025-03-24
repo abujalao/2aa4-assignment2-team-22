@@ -1,13 +1,14 @@
 package ca.mcmaster.se2aa4.island.team22.States;
 
-import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.Actions.Echo;
 import ca.mcmaster.se2aa4.island.team22.Actions.Fly;
 import ca.mcmaster.se2aa4.island.team22.Actions.Heading;
 import ca.mcmaster.se2aa4.island.team22.Actions.Scan;
 import ca.mcmaster.se2aa4.island.team22.Actions.Stop;
-import ca.mcmaster.se2aa4.island.team22.DirectionUtil;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
+import ca.mcmaster.se2aa4.island.team22.Util.DirectionUtil;
+
 
 public class InterlaceScan extends State {
     private int scanCounter=0;
@@ -64,7 +65,7 @@ public class InterlaceScan extends State {
             logger.info("Have found save places.");
             return actionControlInterface.execute(ActionType.stop); 
         }
-        if(droneInterface.isbiomeOcean()){
+        if(storageInterface.isOnOcean()){
             logger.info("Biome is ocean, turning...");
             this.oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
             if (ChangeScanDir){

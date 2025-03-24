@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
-import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 
 public abstract class Action implements IActionExecute {
@@ -43,6 +43,8 @@ public abstract class Action implements IActionExecute {
     public IDroneAction getDroneInterface() {
         return droneInterface;
     }
+    @Override
+    public abstract Action createNew();
     @Override
     public abstract String execute(Object... parameters);
     @Override

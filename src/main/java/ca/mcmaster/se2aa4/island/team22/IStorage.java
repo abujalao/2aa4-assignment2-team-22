@@ -7,4 +7,5 @@ public interface IStorage {
     public int getRange();
     public void decrementRange();
     public String getResult();
+    public boolean isOnOcean();
 }

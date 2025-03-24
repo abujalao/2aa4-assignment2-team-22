@@ -9,8 +9,8 @@ import org.apache.logging.log4j.Logger;
 
 public class Maps implements IMap{
     private final Logger logger = LogManager.getLogger();
-    private IDroneAction drone;
-    private IPoi poi;
+    private final IDroneAction drone;
+    private final IPoi poi;
     private final HashSet<Position> scannedPositions = new HashSet();
     private final Map<String, Position> mapCreeks = new HashMap();
     private final Map<String, Position> mapSites= new HashMap();
@@ -24,12 +24,10 @@ public class Maps implements IMap{
 
 
     public boolean canSaveThem(){
-        if(creekFound && siteFound){
-            return true;
-        }
-        return false;
+        return creekFound && siteFound;
     }
 
+    @Override
     public boolean isInMap(int[] pos){ //check if the position 2d array is in the map
         Position position = new Position(pos[0], pos[1]);
         return scannedPositions.contains(position);

@@ -7,9 +7,12 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
-import ca.mcmaster.se2aa4.island.team22.StateManager.DroneState;
-
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager;
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
+import ca.mcmaster.se2aa4.island.team22.Managers.IActionManage;
+import ca.mcmaster.se2aa4.island.team22.Managers.StateManager;
+import ca.mcmaster.se2aa4.island.team22.Managers.StateManager.DroneState;
+import ca.mcmaster.se2aa4.island.team22.Util.DirectionUtil;
 public class Drone implements IDroneAction {
     private final Logger logger = LogManager.getLogger();
     private int batteryLevel;
@@ -87,11 +90,6 @@ public class Drone implements IDroneAction {
     @Override
     public String getInitialHeading(){
         return initialHeading;
-    }
-
-    @Override
-    public boolean isbiomeOcean(){
-        return store.isOnOcean();
     }
 
     private IDroneAction getDroneInterface(){

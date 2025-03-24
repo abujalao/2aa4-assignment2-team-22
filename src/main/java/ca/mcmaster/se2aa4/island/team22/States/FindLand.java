@@ -1,15 +1,15 @@
 package ca.mcmaster.se2aa4.island.team22.States;
 
-import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
+
 import ca.mcmaster.se2aa4.island.team22.Actions.Echo;
 import ca.mcmaster.se2aa4.island.team22.Actions.Fly;
 import ca.mcmaster.se2aa4.island.team22.Actions.Heading;
 import ca.mcmaster.se2aa4.island.team22.Actions.Scan;
 import ca.mcmaster.se2aa4.island.team22.Actions.Stop;
-import ca.mcmaster.se2aa4.island.team22.DirectionUtil;
 import ca.mcmaster.se2aa4.island.team22.IDroneAction;
-import ca.mcmaster.se2aa4.island.team22.StateManager.DroneState;
-
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
+import ca.mcmaster.se2aa4.island.team22.Managers.StateManager.DroneState;
+import ca.mcmaster.se2aa4.island.team22.Util.DirectionUtil;
 public class FindLand extends State {
     private int count=0;
     public FindLand(IDroneAction droneInterface) {

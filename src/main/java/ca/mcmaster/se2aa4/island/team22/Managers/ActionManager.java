@@ -1,26 +1,22 @@
-package ca.mcmaster.se2aa4.island.team22;
+package ca.mcmaster.se2aa4.island.team22.Managers;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import ca.mcmaster.se2aa4.island.team22.ActionManager.ActionType;
 import ca.mcmaster.se2aa4.island.team22.Actions.Action;
 import ca.mcmaster.se2aa4.island.team22.Actions.Echo;
 import ca.mcmaster.se2aa4.island.team22.Actions.Fly;
 import ca.mcmaster.se2aa4.island.team22.Actions.Heading;
 import ca.mcmaster.se2aa4.island.team22.Actions.Scan;
 import ca.mcmaster.se2aa4.island.team22.Actions.Stop;
-
+import ca.mcmaster.se2aa4.island.team22.IDroneAction;
+import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
 public class ActionManager implements IActionManage {
 
     public enum ActionType {
         echo, fly, scan, stop, heading;
     }
     
-    private final Logger logger = LogManager.getLogger();
     private final Map<ActionType, Action> actions = new HashMap<>();
     private Action action;
     private final Map<ActionType, Map> pastParameters = new HashMap<>(); //save last parameter given in createAction() call
@@ -37,12 +33,6 @@ public class ActionManager implements IActionManage {
     @Override
     public void setAction(ActionType action) {
         this.action = getAction(action);
-    }
-    public String executeCurrentAction() {
-        return action.execute();
-    }
-    public String executeCurrentAction(String dir) {
-        return action.execute(dir);
     }
 
     public void processAction(ActionType action, Map<String, Object> parameters) {
@@ -76,8 +66,8 @@ public class ActionManager implements IActionManage {
     }
 
     @Override
-    public Action getAction(){ //get action using action enum (MAKE PRIVATE LATER + ALL ACTIONS IN ACTIONMANAGER SHOULDNT BE ACCESSIBLE SO CHECK THAT SO WE DO INFO HIDING)
-        return action; //DANGER
+    public Action getAction(){
+        return action.createNew();
     }
 
     public String getCurrentAction(){ //get current action in String format
@@ -86,7 +76,6 @@ public class ActionManager implements IActionManage {
 
     @Override
     public String execute(ActionType action, Object... parameters) {
-        //processAction(ActionType action, Map.of(parameters));
         String executeResult = getAction(action).execute(parameters);
         setAction(action);
         return executeResult;
