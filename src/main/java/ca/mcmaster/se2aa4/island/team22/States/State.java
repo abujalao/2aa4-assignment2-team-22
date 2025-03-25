@@ -14,9 +14,9 @@ import ca.mcmaster.se2aa4.island.team22.IStorage;
 import ca.mcmaster.se2aa4.island.team22.Managers.IActionManage;
 
 public abstract class State implements IDroneState {
-    public  final IDroneAction droneInterface;
-    public IStorage storageInterface;
-    public IActionManage actionControlInterface;
+    protected  final IDroneAction droneInterface;
+    protected IStorage storageInterface;
+    protected IActionManage actionControlInterface;
     public final Logger logger = LogManager.getLogger();
 
     public State(IDroneAction droneInterface,IStorage storageInterface,IActionManage actionControlInterface) {
