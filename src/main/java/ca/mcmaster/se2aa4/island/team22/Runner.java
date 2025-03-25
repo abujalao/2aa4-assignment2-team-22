@@ -15,7 +15,7 @@ public class Runner {
             run(explorerInterface.getClass())
                     .exploring(new File(filename))
                     .withSeed(42L)
-                    .startingAt(1,1, "EAST") //Edited (was .startingAt(1, 1, "EAST"))
+                    .startingAt(1,1, "SOUTH") //Edited (was .startingAt(1, 1, "EAST"))
                     .backBefore(7000)
                     .withCrew(5)
                     .collecting(1000, "WOOD")
