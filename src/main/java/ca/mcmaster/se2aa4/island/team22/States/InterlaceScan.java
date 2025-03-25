@@ -21,6 +21,9 @@ public class InterlaceScan extends State {
 
     @Override
     protected String performCheck(Echo action) {
+        if (storageInterface.getResult().equals("OUT_OF_RANGE") && droneInterface.getDirection().equals(actionControlInterface.getPastParameter(ActionType.echo, "direction")) && storageInterface.getRange() >=2) {
+            return actionControlInterface.execute(ActionType.stop);
+        }
         return actionControlInterface.execute(ActionType.fly);
     }
 
