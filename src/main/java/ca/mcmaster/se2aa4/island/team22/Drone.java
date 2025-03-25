@@ -33,7 +33,7 @@ public class Drone implements IDroneAction {
         this.batteryLevel = batteryLevel;
         actionManager.setDirectionParameter(direction); //save inital direction in actionManager.pastParameters to track drone direction
 
-        actionManager.setAction(ActionType.echo); //default action is echo
+        actionManager.setAction(ActionType.ECHO); //default action is echo
         stateManager.setState(DroneState.findLand); //default state is find island
 
 
@@ -84,7 +84,7 @@ public class Drone implements IDroneAction {
 
     @Override
     public String getDirection() {
-        return actionManager.getPastParameter(ActionType.heading,"direction"); //Last saved heading action parameter is the drone current direction.
+        return actionManager.getPastParameter(ActionType.HEADING,"direction"); //Last saved heading action parameter is the drone current direction.
     }
 
     @Override
@@ -128,7 +128,7 @@ public class Drone implements IDroneAction {
 
         //base case: if battery level is low, just return to base to avoid losing the drone
         if(batteryLevel < 30){ 
-            return actionManager.execute(ActionType.stop);
+            return actionManager.execute(ActionType.STOP);
         }
         return stateManager.performMove();
     }

@@ -21,10 +21,10 @@ public class InterlaceScan extends State {
 
     @Override
     protected String performCheck(Echo action) {
-        if (storageInterface.getResult().equals("OUT_OF_RANGE") && droneInterface.getDirection().equals(actionControlInterface.getPastParameter(ActionType.echo, "direction")) && storageInterface.getRange() <=2) {
-            return actionControlInterface.execute(ActionType.stop);
+        if (storageInterface.getResult().equals("OUT_OF_RANGE") && droneInterface.getDirection().equals(actionControlInterface.getPastParameter(ActionType.ECHO, "direction")) && storageInterface.getRange() <=2) {
+            return actionControlInterface.execute(ActionType.STOP);
         }
-        return actionControlInterface.execute(ActionType.fly);
+        return actionControlInterface.execute(ActionType.FLY);
     }
 
     @Override
@@ -33,24 +33,24 @@ public class InterlaceScan extends State {
         this.oppositeDir = "";
         storageInterface.decrementRange();
         if(oppositeScan && !oppositeDir.equals("")){
-            return actionControlInterface.execute(ActionType.heading,oppositeDir);
+            return actionControlInterface.execute(ActionType.HEADING,oppositeDir);
         }
         //i need getbiome from previousresponse
         if(storageInterface.getRange() > -1 && storageInterface.getResult().equals("GROUND")){
-            return actionControlInterface.execute(ActionType.fly);
+            return actionControlInterface.execute(ActionType.FLY);
         }
         if(storageInterface.getRange() > -1 && !storageInterface.getResult().equals("GROUND")){
             this.oppositeScan=true;
             this.ChangeScanDir=true;
             this.oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
-            return actionControlInterface.execute(ActionType.heading,availableDirs[0]);
+            return actionControlInterface.execute(ActionType.HEADING,availableDirs[0]);
         }
         if (storageInterface.getResult().equals("GROUND")){
             if(droneInterface.getMapInterface().isInMap(droneInterface.getDronePosition())){
                 logger.info("Already scanned, skipping scan");
-                return actionControlInterface.execute(ActionType.fly);
+                return actionControlInterface.execute(ActionType.FLY);
             }
-            return actionControlInterface.execute(ActionType.scan);
+            return actionControlInterface.execute(ActionType.SCAN);
         }
         return action.execute();
     }
@@ -66,31 +66,31 @@ public class InterlaceScan extends State {
         droneInterface.getMapInterface().addPOI();
         if (droneInterface.canSaveThem()){
             logger.info("Have found save places.");
-            return actionControlInterface.execute(ActionType.stop); 
+            return actionControlInterface.execute(ActionType.STOP); 
         }
         if(storageInterface.isOnOcean()){
             logger.info("Biome is ocean, turning...");
             this.oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
             if (ChangeScanDir){
-                return actionControlInterface.execute(ActionType.heading,availableDirs[0]);
+                return actionControlInterface.execute(ActionType.HEADING,availableDirs[0]);
             }
-            return actionControlInterface.execute(ActionType.heading,availableDirs[1]);
+            return actionControlInterface.execute(ActionType.HEADING,availableDirs[1]);
         }
-        return actionControlInterface.execute(ActionType.fly);
+        return actionControlInterface.execute(ActionType.FLY);
     }
     @Override
     protected String performCheck(Heading action) {
         if (scanCounter == 0){
                 scanCounter++;
                 if(oppositeScan){
-                    return actionControlInterface.execute(ActionType.fly);
+                    return actionControlInterface.execute(ActionType.FLY);
                 }
-                return actionControlInterface.execute(ActionType.heading,oppositeDir);
+                return actionControlInterface.execute(ActionType.HEADING,oppositeDir);
             }
             else{
                 scanCounter=0;
                 this.oppositeScan=false;
-                return actionControlInterface.execute(ActionType.echo,droneInterface.getDirection());
+                return actionControlInterface.execute(ActionType.ECHO,droneInterface.getDirection());
             }
     }
     @Override

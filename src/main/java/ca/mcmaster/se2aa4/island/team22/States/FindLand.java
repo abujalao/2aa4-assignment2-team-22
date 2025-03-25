@@ -23,15 +23,15 @@ public class FindLand extends State {
 
         if(storageInterface.getResult().equals("GROUND")){
             logger.info("FOUND GROUND");
-            if(droneInterface.getDirection().equals(actionControlInterface.getPastParameter(ActionType.echo, "direction"))){
+            if(droneInterface.getDirection().equals(actionControlInterface.getPastParameter(ActionType.ECHO, "direction"))){
                 storageInterface.decrementRange();
-                return actionControlInterface.execute(ActionType.fly);
+                return actionControlInterface.execute(ActionType.FLY);
             }
             else{
                 storageInterface.decrementRange();
                 String oppositeDir = DirectionUtil.Opposite_Directions.get(droneInterface.getDirection());
                 logger.info("dir is:" + droneInterface.getDirection() + "Opposite is: " + oppositeDir);
-                return actionControlInterface.execute(ActionType.heading,actionControlInterface.getPastParameter(ActionType.echo, "direction"));
+                return actionControlInterface.execute(ActionType.HEADING,actionControlInterface.getPastParameter(ActionType.ECHO, "direction"));
             }
         }
         //if its looking at ground then fly towards it...
@@ -41,11 +41,11 @@ public class FindLand extends State {
             
             if (this.count > 1){
                 count=0;
-                return actionControlInterface.execute(ActionType.fly);
+                return actionControlInterface.execute(ActionType.FLY);
             }
             int oldCount = count;
             count++;
-            return actionControlInterface.execute(ActionType.echo, availableDirs[oldCount]);
+            return actionControlInterface.execute(ActionType.ECHO, availableDirs[oldCount]);
         }
     }
 
@@ -57,11 +57,11 @@ public class FindLand extends State {
             // Get the directions available for the current position
             if (count == 0){ 
                 count++;
-                return actionControlInterface.execute(ActionType.echo,availableDirs[0]);
+                return actionControlInterface.execute(ActionType.ECHO,availableDirs[0]);
             }
             else{
                 count = 0;
-                return actionControlInterface.execute(ActionType.echo,availableDirs[1]);
+                return actionControlInterface.execute(ActionType.ECHO,availableDirs[1]);
             }
 
         } else {
@@ -73,7 +73,7 @@ public class FindLand extends State {
             }
             else if (storageInterface.getRange() < 0){ //You are in land now
                 droneInterface.setDroneState(DroneState.interlaceScan); //change drone state to start scanning
-                return actionControlInterface.execute(ActionType.scan);
+                return actionControlInterface.execute(ActionType.SCAN);
             }
         } 
         return action.execute(); //test to make it stop
@@ -81,11 +81,11 @@ public class FindLand extends State {
 
     @Override
     protected String performCheck(Scan action) {
-        return actionControlInterface.execute(ActionType.fly);
+        return actionControlInterface.execute(ActionType.FLY);
     }
     @Override
     protected String performCheck(Heading action) {
-        return actionControlInterface.execute(ActionType.fly);
+        return actionControlInterface.execute(ActionType.FLY);
     }
     @Override
     protected String performCheck(Stop action) {

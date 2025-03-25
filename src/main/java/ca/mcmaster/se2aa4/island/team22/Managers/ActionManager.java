@@ -14,7 +14,7 @@ import ca.mcmaster.se2aa4.island.team22.Managers.ActionManager.ActionType;
 public class ActionManager implements IActionManage {
 
     public enum ActionType {
-        echo, fly, scan, stop, heading;
+        ECHO, FLY, SCAN, STOP, HEADING;
     }
     
     private final Map<ActionType, Action> actions = new HashMap<>();
@@ -23,11 +23,11 @@ public class ActionManager implements IActionManage {
 
     public ActionManager(IDroneAction droneInterface) {
         //initialize all actions manually
-        actions.put(ActionType.heading, new Heading(droneInterface));
-        actions.put(ActionType.echo, new Echo(droneInterface));
-        actions.put(ActionType.fly, new Fly(droneInterface));
-        actions.put(ActionType.stop, new Stop(droneInterface));
-        actions.put(ActionType.scan, new Scan(droneInterface));
+        actions.put(ActionType.HEADING, new Heading(droneInterface));
+        actions.put(ActionType.ECHO, new Echo(droneInterface));
+        actions.put(ActionType.FLY, new Fly(droneInterface));
+        actions.put(ActionType.STOP, new Stop(droneInterface));
+        actions.put(ActionType.SCAN, new Scan(droneInterface));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ActionManager implements IActionManage {
     }
 
     public void setDirectionParameter(String direction){ //When we initialize drone we need to use this method to save the direction in pastParameters
-        pastParameters.put(ActionType.heading,Map.of("direction",direction));
+        pastParameters.put(ActionType.HEADING,Map.of("direction",direction));
     }
 
     @Override

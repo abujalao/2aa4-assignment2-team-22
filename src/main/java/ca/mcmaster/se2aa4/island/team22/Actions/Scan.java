@@ -6,7 +6,7 @@ import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 public class Scan extends Action {
 
     public Scan(IDroneAction droneInterface) {
-        super(droneInterface,ActionType.scan);     
+        super(droneInterface,ActionType.SCAN);     
     }
     
     @Override
@@ -21,6 +21,6 @@ public class Scan extends Action {
     
     @Override
     public String execute(Object... args) {
-        return createAction(ActionType.scan);
+        return createAction(ActionType.SCAN);
     }
 }

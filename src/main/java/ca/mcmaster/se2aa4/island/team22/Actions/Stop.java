@@ -6,7 +6,7 @@ import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 public class Stop extends Action {
 
     public Stop(IDroneAction droneInterface) {
-        super(droneInterface, ActionType.stop);
+        super(droneInterface, ActionType.STOP);
     }
 
     @Override
@@ -17,7 +17,7 @@ public class Stop extends Action {
     @Override
     public String execute(Object... args) {
         droneInterface.getMapInterface().printMap();
-        return createAction(ActionType.stop);
+        return createAction(ActionType.STOP);
     }
 
     @Override

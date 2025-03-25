@@ -8,7 +8,7 @@ import ca.mcmaster.se2aa4.island.team22.Util.DirectionUtil;
 public class Fly extends Action {
 
     public Fly(IDroneAction droneInterface) {
-        super(droneInterface,ActionType.fly);
+        super(droneInterface,ActionType.FLY);
     }
 
     @Override
@@ -26,6 +26,6 @@ public class Fly extends Action {
         String Direction = droneInterface.getDirection(); //ISTORAGE METHOD
         int[] stepAmount = DirectionUtil.Fly_Increment.get(Direction); //amount of steps to add in position (x,y)
         getDroneInterface().moveDrone(stepAmount[0],stepAmount[1]); //DRONE INTERFACE
-        return createAction(ActionType.fly);
+        return createAction(ActionType.FLY);
     }
 }

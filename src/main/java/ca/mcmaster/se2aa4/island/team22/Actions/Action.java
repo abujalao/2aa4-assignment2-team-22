@@ -27,7 +27,7 @@ public abstract class Action implements IActionExecute {
     public String createAction(ActionType action, Map<String, Object> parameters) {
         droneInterface.getActionManagerInterface().putPastParameter(action,parameters);
         JSONObject decision = new JSONObject(Map.of(
-             "action", action
+             "action", action.toString().toLowerCase()
         ));
         
         if (parameters != null && !parameters.isEmpty()) {

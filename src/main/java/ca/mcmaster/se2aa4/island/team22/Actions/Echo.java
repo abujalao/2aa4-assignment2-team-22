@@ -8,7 +8,7 @@ import ca.mcmaster.se2aa4.island.team22.States.IDroneState;
 
 public class Echo extends Action {
     public Echo(IDroneAction droneInterface) {
-        super(droneInterface,ActionType.echo);
+        super(droneInterface,ActionType.ECHO);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Echo extends Action {
     @Override
     public String execute(Object... args) {
         if (args.length > 0 && args[0] instanceof String direction) {
-            return createAction(ActionType.echo,Map.of("direction", direction));
+            return createAction(ActionType.ECHO,Map.of("direction", direction));
         } else {
             throw new IllegalArgumentException("Echo action requires a direction argument.");
         }
